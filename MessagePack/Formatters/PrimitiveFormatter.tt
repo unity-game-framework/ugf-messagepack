@@ -1,0 +1,130 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+    var types = new[]
+    {
+        typeof(Int16),
+        typeof(Int32),
+        typeof(Int64),
+        typeof(UInt16),
+        typeof(UInt32),
+        typeof(UInt64),
+        typeof(Single),
+        typeof(Double),
+        typeof(bool), 
+        typeof(byte), 
+        typeof(sbyte),
+        typeof(char),
+        typeof(DateTime)
+    };
+#>
+using System;
+using System.Buffers;
+
+namespace MessagePack.Formatters
+{
+<# foreach(var t in types) {  #>
+    public sealed class <#= t.Name #>Formatter : IMessagePackFormatter<<#= t.Name #>>
+    {
+        public static readonly <#= t.Name #>Formatter Instance = new <#= t.Name #>Formatter();
+
+        <#= t.Name #>Formatter()
+        {
+        }
+
+        public void Serialize(ref MessagePackWriter writer, <#= t.Name #> value, IFormatterResolver resolver)
+        {
+            writer.Write(value);
+        }
+
+        public <#= t.Name #> Deserialize(ref MessagePackReader reader, IFormatterResolver resolver)
+        {
+            return reader.Read<#= t.Name #>();
+        }
+    }
+
+    public sealed class Nullable<#= t.Name #>Formatter : IMessagePackFormatter<<#= t.Name #>?>
+    {
+        public static readonly Nullable<#= t.Name #>Formatter Instance = new Nullable<#= t.Name #>Formatter();
+
+        Nullable<#= t.Name #>Formatter()
+        {
+        }
+
+        public void Serialize(ref MessagePackWriter writer, <#= t.Name #>? value, IFormatterResolver resolver)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+            }
+            else
+            {
+                writer.Write(value.Value);
+            }
+        }
+
+        public <#= t.Name #>? Deserialize(ref MessagePackReader reader, IFormatterResolver resolver)
+        {
+            if (reader.TryReadNil())
+            {
+                return default;
+            }
+            else
+            {
+                return reader.Read<#= t.Name #>();
+            }
+        }
+    }
+
+<# if(t.Name != "Byte") { #>
+    public sealed class <#= t.Name #>ArrayFormatter : IMessagePackFormatter<<#= t.Name #>[]>
+    {
+        public static readonly <#= t.Name #>ArrayFormatter Instance = new <#= t.Name #>ArrayFormatter();
+
+        <#= t.Name #>ArrayFormatter()
+        {
+
+        }
+
+        public void Serialize(ref MessagePackWriter writer, <#= t.Name #>[] value, IFormatterResolver resolver)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+            }
+            else
+            {
+                writer.WriteArrayHeader(value.Length);
+                for (int i = 0; i < value.Length; i++)
+                {
+                    writer.Write(value[i]);
+                }
+            }
+        }
+
+        public <#= t.Name #>[] Deserialize(ref MessagePackReader reader, IFormatterResolver resolver)
+        {
+            if (reader.TryReadNil())
+            {
+                return default;
+            }
+            else
+            {
+                var len = reader.ReadArrayHeader();
+                var array = new <#= t.Name #>[len];
+                for (int i = 0; i < array.Length; i++)
+                {
+                    array[i] = reader.Read<#= t.Name #>();
+                }
+                return array;
+            }
+        }
+    }
+<# } #>
+
+<# } #>
+}

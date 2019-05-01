@@ -1,0 +1,53 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+#if !UNITY
+using System;
+using System.Buffers;
+
+namespace MessagePack.Formatters
+{
+<# for(var i = 1; i <= 8; i++) { 
+    Func<int, string> toT = x => "T" + ((x == 8) ? "Rest" : x.ToString());
+    Func<int, string> toItem = x => ((x == 8) ? "Rest" : "Item" + x);
+    var ts = string.Join(", ", Enumerable.Range(1, i).Select(x => toT(x))); 
+    var t = "ValueTuple<" + ts + ">"; 
+#>
+
+    public sealed class ValueTupleFormatter<<#= ts #>> : IMessagePackFormatter<<#= t #>><#= (t.Contains("TRest") ? " where TRest : struct" : "") #>
+    {
+        public void Serialize(ref MessagePackWriter writer, <#= t #> value, IFormatterResolver resolver)
+        {
+            writer.WriteArrayHeader(<#= i #>);
+
+<# for(var j = 1; j <= i; j++) { #>
+            resolver.GetFormatterWithVerify<<#= toT(j) #>>().Serialize(ref writer, value.<#= toItem(j) #>, resolver);
+<# } #>
+        }
+
+        public <#= t #> Deserialize(ref MessagePackReader reader, IFormatterResolver resolver)
+        {
+            if (reader.IsNil)
+            {
+                throw new InvalidOperationException("Data is Nil, ValueTuple can not be null.");
+            }
+            else
+            {
+                var count = reader.ReadArrayHeader();
+                if (count != <#= i #>) throw new InvalidOperationException("Invalid ValueTuple count");
+
+<# for(var j = 1; j <= i; j++) { #>
+                var item<#= j #> = resolver.GetFormatterWithVerify<<#= toT(j) #>>().Deserialize(ref reader, resolver);
+<# } #>
+            
+                return new ValueTuple<<#= ts #>>(<#= string.Join(", ", Enumerable.Range(1, i).Select(x => "item" + x)) #>);
+            }
+        }
+    }
+
+<# } #>
+}
+#endif
