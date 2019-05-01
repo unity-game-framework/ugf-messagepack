@@ -1,0 +1,20 @@
+{
+    "name": "UGF.MessagePack.Editor.Tests",
+    "references": [
+        "GUID:94f0c128ac2728f4d8370979a4d2bc47",
+        "GUID:a930748d037126748a8e9c3543315cfe"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

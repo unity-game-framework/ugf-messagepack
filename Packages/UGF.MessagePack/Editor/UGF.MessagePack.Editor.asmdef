@@ -1,0 +1,17 @@
+{
+    "name": "UGF.MessagePack.Editor",
+    "references": [
+        "GUID:94f0c128ac2728f4d8370979a4d2bc47"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
