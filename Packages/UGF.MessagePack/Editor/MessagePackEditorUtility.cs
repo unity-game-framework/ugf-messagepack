@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using MessagePack.UniversalCodeGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,6 +16,7 @@ using UGF.MessagePack.Editor.Analysis;
 using UGF.MessagePack.Runtime;
 using UnityEditor;
 using UnityEditor.Compilation;
+using UnityEngine;
 
 namespace UGF.MessagePack.Editor
 {
@@ -120,7 +122,8 @@ namespace UGF.MessagePack.Editor
             {
                 IgnoreReadOnly = true,
                 IsTypeRequireAttribute = true,
-                TypeRequiredAttributeShortName = "MessagePackSerializable"
+                TypeRequiredAttributeShortName = "MessagePackSerializable",
+                Compilation = compilation
             };
 
             INamedTypeSymbol attributeTypeSymbol = compilation.GetTypeByMetadataName(typeof(MessagePackFormatterAttribute).FullName);

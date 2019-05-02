@@ -271,7 +271,7 @@ namespace MessagePack.CodeGenerator
         //     Console.WriteLine(e);
         // }
 
-        public static Compilation GetCompilationFromProject(IEnumerable<string> inputFiles, IEnumerable<string> inputDirectories, string[] preprocessorSymbols)
+        public static Compilation GetCompilationFromProject(IEnumerable<string> inputFiles, IEnumerable<string> inputDirectories, string[] preprocessorSymbols, CSharpCompilation compilation = null)
         {
             var parseOptions = new CSharpParseOptions(LanguageVersion.Default, DocumentationMode.Parse, SourceCodeKind.Regular, preprocessorSymbols ?? new string[0]);
             var syntaxTrees = new List<SyntaxTree>();
@@ -305,15 +305,22 @@ namespace MessagePack.CodeGenerator
                 }
             }
 
-            CSharpCompilation compilation = CSharpCompilation.Create(
-                "Assembly-CSharp",
-                syntaxTrees: syntaxTrees,
-                references: references
-            );
+            if (compilation == null)
+            {
+                compilation = CSharpCompilation.Create(
+                    "Assembly-CSharp",
+                    syntaxTrees: syntaxTrees,
+                    references: references
+                );
 
-            Assembly messagePackAssembly = AppDomain.CurrentDomain.GetAssemblies().First(x => x.GetName().Name == "MessagePack");
+                Assembly messagePackAssembly = AppDomain.CurrentDomain.GetAssemblies().First(x => x.GetName().Name == "MessagePack");
 
-            compilation = compilation.AddReferences(MetadataReference.CreateFromFile(messagePackAssembly.Location));
+                compilation = compilation.AddReferences(MetadataReference.CreateFromFile(messagePackAssembly.Location));
+            }
+            else
+            {
+                compilation.AddSyntaxTrees(syntaxTrees);
+            }
 
             return compilation;
         }

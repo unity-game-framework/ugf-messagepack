@@ -1,3 +1,5 @@
+using Microsoft.CodeAnalysis.CSharp;
+
 namespace MessagePack.UniversalCodeGenerator
 {
     /// <summary>
@@ -19,5 +21,7 @@ namespace MessagePack.UniversalCodeGenerator
         /// The short name of attribute that type must contains.
         /// </summary>
         public string TypeRequiredAttributeShortName;
+
+        public CSharpCompilation Compilation;
     }
 }

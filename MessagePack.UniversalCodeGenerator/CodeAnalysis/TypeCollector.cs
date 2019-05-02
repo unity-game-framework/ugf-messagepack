@@ -20,47 +20,57 @@ namespace MessagePack.CodeGenerator
 
         public ReferenceSymbols(Compilation compilation)
         {
-            TaskOfT = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
+            TaskOfT = FindAny(compilation, "System.Threading.Tasks.Task`1");
             if(TaskOfT == null)
             {
                 throw new InvalidOperationException("failed to get metadata of System.Threading.Tasks.Task`1");
             }
-            Task = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
+            Task = FindAny(compilation, "System.Threading.Tasks.Task");
             if (Task == null)
             {
                 throw new InvalidOperationException("failed to get metadata of System.Threading.Tasks.Task");
             }
-            MessagePackObjectAttribute = compilation.GetTypeByMetadataName("MessagePack.MessagePackObjectAttribute");
+            MessagePackObjectAttribute = FindAny(compilation, "MessagePack.MessagePackObjectAttribute");
             if (MessagePackObjectAttribute == null)
             {
                 throw new InvalidOperationException("failed to get metadata of MessagePack.MessagePackObjectAttribute");
             }
-            UnionAttribute = compilation.GetTypeByMetadataName("MessagePack.UnionAttribute");
+            UnionAttribute = FindAny(compilation, "MessagePack.UnionAttribute");
             if (UnionAttribute == null)
             {
                 throw new InvalidOperationException("failed to get metadata of MessagePack.UnionAttribute");
             }
-            SerializationConstructorAttribute = compilation.GetTypeByMetadataName("MessagePack.SerializationConstructorAttribute");
+            SerializationConstructorAttribute = FindAny(compilation, "MessagePack.SerializationConstructorAttribute");
             if (SerializationConstructorAttribute == null)
             {
                 throw new InvalidOperationException("failed to get metadata of MessagePack.SerializationConstructorAttribute");
             }
-            KeyAttribute = compilation.GetTypeByMetadataName("MessagePack.KeyAttribute");
+            KeyAttribute = FindAny(compilation, "MessagePack.KeyAttribute");
             if (KeyAttribute == null)
             {
                 throw new InvalidOperationException("failed to get metadata of MessagePack.KeyAttribute");
             }
-            IgnoreAttribute = compilation.GetTypeByMetadataName("MessagePack.IgnoreMemberAttribute");
+            IgnoreAttribute = FindAny(compilation, "MessagePack.IgnoreMemberAttribute");
             if (IgnoreAttribute == null)
             {
                 throw new InvalidOperationException("failed to get metadata of MessagePack.IgnoreMemberAttribute");
             }
-            IgnoreDataMemberAttribute = compilation.GetTypeByMetadataName("System.Runtime.Serialization.IgnoreDataMemberAttribute");
-            IMessagePackSerializationCallbackReceiver = compilation.GetTypeByMetadataName("MessagePack.IMessagePackSerializationCallbackReceiver");
+            IgnoreDataMemberAttribute = FindAny(compilation, "System.Runtime.Serialization.IgnoreDataMemberAttribute");
+            IMessagePackSerializationCallbackReceiver = FindAny(compilation, "MessagePack.IMessagePackSerializationCallbackReceiver");
             if (IMessagePackSerializationCallbackReceiver == null)
             {
                 throw new InvalidOperationException("failed to get metadata of MessagePack.IMessagePackSerializationCallbackReceiver");
             }
+        }
+
+        private static INamedTypeSymbol FindAny(Compilation compilation, string name)
+        {
+            return compilation.GetTypeByMetadataName(name) ?? compilation.References
+                .Select(compilation.GetAssemblyOrModuleSymbol)
+                .OfType<IAssemblySymbol>()
+                .Union(new [] { compilation.Assembly })
+                .Select(x => x.GetTypeByMetadataName(name))
+                .FirstOrDefault();
         }
     }
 
@@ -243,7 +253,7 @@ namespace MessagePack.CodeGenerator
 
         public TypeCollector(IEnumerable<string> inputFiles, IEnumerable<string> inputDirs, IEnumerable<string> conditinalSymbols, bool disallowInternal, bool isForceUseMap, MessagePackGenerateArguments arguments)
         {
-            var compilation = RoslynExtensions.GetCompilationFromProject(inputFiles, inputDirs, conditinalSymbols.Concat(new[] { CodegeneratorOnlyPreprocessorSymbol }).ToArray());
+            var compilation = RoslynExtensions.GetCompilationFromProject(inputFiles, inputDirs, conditinalSymbols.Concat(new[] { CodegeneratorOnlyPreprocessorSymbol }).ToArray(), arguments.Compilation);
 
             // var compilationErrors = compilation.GetDiagnostics().Where(x => x.Severity == DiagnosticSeverity.Error).ToArray();
             // if(compilationErrors.Length != 0)
