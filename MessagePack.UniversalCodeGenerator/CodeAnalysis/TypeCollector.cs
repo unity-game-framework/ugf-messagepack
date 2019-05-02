@@ -244,11 +244,13 @@ namespace MessagePack.CodeGenerator
         public TypeCollector(IEnumerable<string> inputFiles, IEnumerable<string> inputDirs, IEnumerable<string> conditinalSymbols, bool disallowInternal, bool isForceUseMap, MessagePackGenerateArguments arguments)
         {
             var compilation = RoslynExtensions.GetCompilationFromProject(inputFiles, inputDirs, conditinalSymbols.Concat(new[] { CodegeneratorOnlyPreprocessorSymbol }).ToArray());
-            var compilationErrors = compilation.GetDiagnostics().Where(x => x.Severity == DiagnosticSeverity.Error).ToArray();
-            if(compilationErrors.Length != 0)
-            {
-                throw new InvalidOperationException($"detect compilation error:{string.Join("\n", compilationErrors.Select(x => x.ToString()))}");
-            }
+
+            // var compilationErrors = compilation.GetDiagnostics().Where(x => x.Severity == DiagnosticSeverity.Error).ToArray();
+            // if(compilationErrors.Length != 0)
+            // {
+            //     throw new InvalidOperationException($"detect compilation error:{string.Join("\n", compilationErrors.Select(x => x.ToString()))}");
+            // }
+
             this.typeReferences = new ReferenceSymbols(compilation);
             this.disallowInternal = disallowInternal;
             this.isForceUseMap = isForceUseMap;

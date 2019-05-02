@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -309,6 +310,11 @@ namespace MessagePack.CodeGenerator
                 syntaxTrees: syntaxTrees,
                 references: references
             );
+
+            Assembly messagePackAssembly = AppDomain.CurrentDomain.GetAssemblies().First(x => x.GetName().Name == "MessagePack");
+
+            compilation = compilation.AddReferences(MetadataReference.CreateFromFile(messagePackAssembly.Location));
+
             return compilation;
         }
 
