@@ -424,5 +424,70 @@
             Helper to produce culture-oriented representation of an object as a string
             </summary>
         </member>
+        <member name="T:MessagePack.UniversalCodeGenerator.MessagePackGenerateArguments">
+            <summary>
+            Represents arguments used to generate MessagePack formatters.
+            </summary>
+        </member>
+        <member name="F:MessagePack.UniversalCodeGenerator.MessagePackGenerateArguments.IgnoreReadOnly">
+            <summary>
+            The value that determines whether to ignore read-only fields and properties.
+            </summary>
+        </member>
+        <member name="F:MessagePack.UniversalCodeGenerator.MessagePackGenerateArguments.IsTypeRequireAttribute">
+            <summary>
+            The value that determines whether target type must contains specific attribute.
+            </summary>
+        </member>
+        <member name="F:MessagePack.UniversalCodeGenerator.MessagePackGenerateArguments.TypeRequiredAttributeShortName">
+            <summary>
+            The short name of attribute that type must contains.
+            </summary>
+        </member>
+        <member name="T:MessagePack.UniversalCodeGenerator.MessagePackUniversalCodeGeneratorUtility">
+            <summary>
+            Provides utilities to work with MessagePack UniversalCodeGenerator.
+            </summary>
+        </member>
+        <member name="M:MessagePack.UniversalCodeGenerator.MessagePackUniversalCodeGeneratorUtility.Generate(System.Collections.Generic.IEnumerable{System.String},System.String,System.String,MessagePack.UniversalCodeGenerator.MessagePackGenerateArguments)">
+            <summary>
+            Generates resolver and formatters files and other arguments.
+            </summary>
+            <param name="inputFiles">The collection of input .cs files.</param>
+            <param name="resolverName">The generated resolver name.</param>
+            <param name="namespaceRoot">The root namespace for generated resolver and formatters.</param>
+            <param name="arguments">The generate arguments to control additional generation behaviour.</param>
+        </member>
+        <member name="M:MessagePack.UniversalCodeGenerator.MessagePackUniversalCodeGeneratorUtility.Generate(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Boolean,System.String,System.String,MessagePack.UniversalCodeGenerator.MessagePackGenerateArguments)">
+            <summary>
+            Generates resolver and formatters from the specified files and other arguments.
+            </summary>
+            <param name="inputFiles">The collection of input .cs files.</param>
+            <param name="inputDirectories">The collection of directories with input .cs files.</param>
+            <param name="conditionalSymbols">The collection of conditional compile symbols.</param>
+            <param name="useMap">The value that determines whether to use map serialization.</param>
+            <param name="resolverName">The generated resolver name.</param>
+            <param name="namespaceRoot">The root namespace for generated resolver and formatters.</param>
+            <param name="arguments">The generate arguments to control additional generation behaviour.</param>
+        </member>
+        <member name="M:MessagePack.UniversalCodeGenerator.MessagePackUniversalCodeGeneratorUtility.GenerateFormatters(System.Collections.Generic.IEnumerable{System.String},System.String,MessagePack.UniversalCodeGenerator.MessagePackGenerateArguments)">
+            <summary>
+            Generates formatters without resolver from the specified files and other arguments.
+            </summary>
+            <param name="inputFiles">The collection of input .cs files.</param>
+            <param name="namespaceRoot">The root namespace for generated resolver and formatters.</param>
+            <param name="arguments">The generate arguments to control additional generation behaviour.</param>
+        </member>
+        <member name="M:MessagePack.UniversalCodeGenerator.MessagePackUniversalCodeGeneratorUtility.GenerateFormatters(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Boolean,System.String,MessagePack.UniversalCodeGenerator.MessagePackGenerateArguments)">
+            <summary>
+            Generates formatters without resolver from the specified files and other arguments.
+            </summary>
+            <param name="inputFiles">The collection of input .cs files.</param>
+            <param name="inputDirectories">The collection of directories with input .cs files.</param>
+            <param name="conditionalSymbols">The collection of conditional compile symbols.</param>
+            <param name="useMap">The value that determines whether to use map serialization.</param>
+            <param name="namespaceRoot">The root namespace for generated resolver and formatters.</param>
+            <param name="arguments">The generate arguments to control additional generation behaviour.</param>
+        </member>
     </members>
 </doc>
