@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack.UniversalCodeGenerator;
 
 namespace MessagePack.CodeGenerator
 {
@@ -76,6 +77,7 @@ namespace MessagePack.CodeGenerator
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes);
 
         readonly bool isForceUseMap;
+        private readonly MessagePackGenerateArguments arguments;
         readonly ReferenceSymbols typeReferences;
         readonly INamedTypeSymbol[] targetTypes;
         readonly HashSet<string> embeddedTypes = new HashSet<string>(new string[]
@@ -239,7 +241,7 @@ namespace MessagePack.CodeGenerator
 
         // public TypeCollector(string csProjPath, IEnumerable<string> conditinalSymbols, bool disallowInternal, bool isForceUseMap)
 
-        public TypeCollector(IEnumerable<string> inputFiles, IEnumerable<string> inputDirs, IEnumerable<string> conditinalSymbols, bool disallowInternal)
+        public TypeCollector(IEnumerable<string> inputFiles, IEnumerable<string> inputDirs, IEnumerable<string> conditinalSymbols, bool disallowInternal, bool isForceUseMap, MessagePackGenerateArguments arguments)
         {
             var compilation = RoslynExtensions.GetCompilationFromProject(inputFiles, inputDirs, conditinalSymbols.Concat(new[] { CodegeneratorOnlyPreprocessorSymbol }).ToArray());
             var compilationErrors = compilation.GetDiagnostics().Where(x => x.Severity == DiagnosticSeverity.Error).ToArray();
@@ -250,6 +252,7 @@ namespace MessagePack.CodeGenerator
             this.typeReferences = new ReferenceSymbols(compilation);
             this.disallowInternal = disallowInternal;
             this.isForceUseMap = isForceUseMap;
+            this.arguments = arguments;
 
             targetTypes = compilation.GetNamedTypeSymbols()
                 .Where(x =>
@@ -304,6 +307,14 @@ namespace MessagePack.CodeGenerator
             if (embeddedTypes.Contains(typeSymbol.ToString()))
             {
                 return;
+            }
+
+            if (arguments.IsTypeRequireAttribute)
+            {
+                if (typeSymbol.GetAttributes().FindAttributeShortName(arguments.TypeRequiredAttributeShortName) == null)
+                {
+                    return;
+                }
             }
 
             if (typeSymbol.TypeKind == TypeKind.Array)
@@ -532,7 +543,10 @@ namespace MessagePack.CodeGenerator
                         Type = item.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                         ShortTypeName = item.Type.ToDisplayString(binaryWriteFormat)
                     };
+
                     if (!member.IsReadable && !member.IsWritable) continue;
+                    if (arguments.IgnoreReadOnly && !member.IsWritable) continue;
+
                     member.IntKey = hiddenIntKey++;
                     stringMembers.Add(member.StringKey, member);
 
@@ -554,7 +568,10 @@ namespace MessagePack.CodeGenerator
                         Type = item.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                         ShortTypeName = item.Type.ToDisplayString(binaryWriteFormat)
                     };
+
                     if (!member.IsReadable && !member.IsWritable) continue;
+                    if (arguments.IgnoreReadOnly && !member.IsWritable) continue;
+
                     member.IntKey = hiddenIntKey++;
                     stringMembers.Add(member.StringKey, member);
                     CollectCore(item.Type); // recursive collect
