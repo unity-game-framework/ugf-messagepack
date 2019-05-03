@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace UGF.MessagePack.Runtime.Tests.TestAssembly
 {
-    [MessagePackSerializable]
     [MessagePackObject]
     public class TestTarget
     {

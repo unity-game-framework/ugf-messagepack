@@ -146,7 +146,7 @@ namespace MessagePack.CodeGenerator.Generator
 
             #line default
             #line hidden
-            this.Write("            };\r\n        }\r\n\r\n        public void Serialize(ref MessagePackWriter " +
+            this.Write("            };\r\n        }\r\n\r\n        public void Serialize(ref global::MessagePack.MessagePackWriter " +
                     "writer, ");
 
             #line 40 "D:\git\MessagePack-CSharp\src\MessagePack.UniversalCodeGenerator\Generator\UnionTemplate.tt"
@@ -198,7 +198,7 @@ namespace MessagePack.CodeGenerator.Generator
 
             #line default
             #line hidden
-            this.Write(" Deserialize(ref MessagePackReader reader, global::MessagePack.IFormatterResolver formatterResolver)\r\n        {\r\n            if (reader.TryReadNil())\r\n            {\r\n                return null;\r\n            }\r\n\r\n            if (reader.ReadArrayHeader() != 2)\r\n            {\r\n                throw new InvalidOperationException(\"Invalid Union data was detected. Type:");
+            this.Write(" Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.IFormatterResolver formatterResolver)\r\n        {\r\n            if (reader.TryReadNil())\r\n            {\r\n                return null;\r\n            }\r\n\r\n            if (reader.ReadArrayHeader() != 2)\r\n            {\r\n                throw new InvalidOperationException(\"Invalid Union data was detected. Type:");
 
             #line 73 "D:\git\MessagePack-CSharp\src\MessagePack.UniversalCodeGenerator\Generator\UnionTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(info.FullName));

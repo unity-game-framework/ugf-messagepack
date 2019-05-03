@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using MessagePack;
 using MessagePack.UniversalCodeGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,10 +13,9 @@ using UGF.Assemblies.Editor;
 using UGF.Code.Analysis.Editor;
 using UGF.Code.Generate.Editor;
 using UGF.MessagePack.Editor.Analysis;
-using UGF.MessagePack.Runtime;
 using UnityEditor;
 using UnityEditor.Compilation;
-using UnityEngine;
+using MessagePackFormatterAttribute = UGF.MessagePack.Runtime.MessagePackFormatterAttribute;
 
 namespace UGF.MessagePack.Editor
 {
@@ -173,7 +173,7 @@ namespace UGF.MessagePack.Editor
         }
 
         /// <summary>
-        /// Determines whether source from the specified path contains any declaration with the <see cref="MessagePackSerializableAttribute"/> attribute.
+        /// Determines whether source from the specified path contains any declaration with the <see cref="MessagePackObjectAttribute"/> attribute.
         /// </summary>
         /// <param name="path">The path of the source.</param>
         /// <param name="compilation">The project compilation used during generation.</param>
@@ -182,7 +182,7 @@ namespace UGF.MessagePack.Editor
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (compilation == null) compilation = CodeAnalysisEditorUtility.ProjectCompilation;
 
-            return CodeGenerateEditorUtility.CheckAttributeFromScript(compilation, path, typeof(MessagePackSerializableAttribute));
+            return CodeGenerateEditorUtility.CheckAttributeFromScript(compilation, path, typeof(MessagePackObjectAttribute));
         }
     }
 }

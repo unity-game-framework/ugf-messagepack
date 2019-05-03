@@ -131,7 +131,7 @@ namespace MessagePack.CodeGenerator.Generator
 
             #line default
             #line hidden
-            this.Write("\r\n        public void Serialize(ref MessagePackWriter writer, ");
+            this.Write("\r\n        public void Serialize(ref global::MessagePack.MessagePackWriter writer, ");
 
             #line 45 "D:\git\MessagePack-CSharp\src\MessagePack.UniversalCodeGenerator\Generator\FormatterTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(objInfo.FullName));
@@ -295,7 +295,7 @@ if(objInfo.HasIMessagePackSerializationCallbackReceiver && objInfo.NeedsCastOnBe
 
             #line default
             #line hidden
-            this.Write(" Deserialize(ref MessagePackReader reader, global::MessagePack.IFormatterResolver" +
+            this.Write(" Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.IFormatterResolver" +
                     " formatterResolver)\r\n        {\r\n            if (reader.TryReadNil())\r\n          " +
                     "  {\r\n");
 

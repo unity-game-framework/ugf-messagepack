@@ -17,12 +17,12 @@ namespace TestAssembly.Formatters.UnityEngine
     [global::UGF.MessagePack.Runtime.MessagePackFormatterAttribute(typeof(global::UnityEngine.HideFlags))]
     public sealed class HideFlagsFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UnityEngine.HideFlags>
     {
-        public void Serialize(ref MessagePackWriter writer, global::UnityEngine.HideFlags value, global::MessagePack.IFormatterResolver formatterResolver)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::UnityEngine.HideFlags value, global::MessagePack.IFormatterResolver formatterResolver)
         {
             writer.Write((Int32)value);
         }
         
-        public global::UnityEngine.HideFlags Deserialize(ref MessagePackReader reader, global::MessagePack.IFormatterResolver formatterResolver)
+        public global::UnityEngine.HideFlags Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.IFormatterResolver formatterResolver)
         {
             return (global::UnityEngine.HideFlags)reader.ReadInt32();
         }
@@ -53,7 +53,7 @@ namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
     public sealed class TestTargetFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UGF.MessagePack.Runtime.Tests.TestAssembly.TestTarget>
     {
 
-        public void Serialize(ref MessagePackWriter writer, global::UGF.MessagePack.Runtime.Tests.TestAssembly.TestTarget value, global::MessagePack.IFormatterResolver formatterResolver)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::UGF.MessagePack.Runtime.Tests.TestAssembly.TestTarget value, global::MessagePack.IFormatterResolver formatterResolver)
         {
             if (value == null)
             {
@@ -70,7 +70,7 @@ namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
             formatterResolver.GetFormatterWithVerify<global::UnityEngine.HideFlags>().Serialize(ref writer, value.Flags, formatterResolver);
         }
 
-        public global::UGF.MessagePack.Runtime.Tests.TestAssembly.TestTarget Deserialize(ref MessagePackReader reader, global::MessagePack.IFormatterResolver formatterResolver)
+        public global::UGF.MessagePack.Runtime.Tests.TestAssembly.TestTarget Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.IFormatterResolver formatterResolver)
         {
             if (reader.TryReadNil())
             {
