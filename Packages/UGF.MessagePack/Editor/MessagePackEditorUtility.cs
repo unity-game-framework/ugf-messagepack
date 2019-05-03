@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using MessagePack.UniversalCodeGenerator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -121,9 +120,7 @@ namespace UGF.MessagePack.Editor
             var arguments = new MessagePackGenerateArguments
             {
                 IgnoreReadOnly = true,
-                IsTypeRequireAttribute = true,
-                TypeRequiredAttributeShortName = "MessagePackSerializable",
-                Compilation = compilation
+                IgnoreNotMarked = true
             };
 
             INamedTypeSymbol attributeTypeSymbol = compilation.GetTypeByMetadataName(typeof(MessagePackFormatterAttribute).FullName);

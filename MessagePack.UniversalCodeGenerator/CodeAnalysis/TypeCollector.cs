@@ -253,7 +253,7 @@ namespace MessagePack.CodeGenerator
 
         public TypeCollector(IEnumerable<string> inputFiles, IEnumerable<string> inputDirs, IEnumerable<string> conditinalSymbols, bool disallowInternal, bool isForceUseMap, MessagePackGenerateArguments arguments)
         {
-            var compilation = RoslynExtensions.GetCompilationFromProject(inputFiles, inputDirs, conditinalSymbols.Concat(new[] { CodegeneratorOnlyPreprocessorSymbol }).ToArray(), arguments.Compilation);
+            var compilation = RoslynExtensions.GetCompilationFromProject(inputFiles, inputDirs, conditinalSymbols.Concat(new[] { CodegeneratorOnlyPreprocessorSymbol }).ToArray());
 
             // var compilationErrors = compilation.GetDiagnostics().Where(x => x.Severity == DiagnosticSeverity.Error).ToArray();
             // if(compilationErrors.Length != 0)
@@ -319,14 +319,6 @@ namespace MessagePack.CodeGenerator
             if (embeddedTypes.Contains(typeSymbol.ToString()))
             {
                 return;
-            }
-
-            if (arguments.IsTypeRequireAttribute)
-            {
-                if (typeSymbol.GetAttributes().FindAttributeShortName(arguments.TypeRequiredAttributeShortName) == null)
-                {
-                    return;
-                }
             }
 
             if (typeSymbol.TypeKind == TypeKind.Array)
@@ -611,8 +603,12 @@ namespace MessagePack.CodeGenerator
                         ShortTypeName = item.Type.ToDisplayString(binaryWriteFormat)
                     };
                     if (!member.IsReadable && !member.IsWritable) continue;
+                    if (arguments.IgnoreReadOnly && !member.IsWritable) continue;
 
                     var key = item.GetAttributes().FirstOrDefault(x => x.AttributeClass == typeReferences.KeyAttribute)?.ConstructorArguments[0];
+
+                    if (key == null && arguments.IgnoreNotMarked) continue;
+
                     if (key == null) throw new MessagePackGeneratorResolveFailedException("all public members must mark KeyAttribute or IgnoreMemberAttribute." + " type: " + type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) + " member:" + item.Name);
 
                     var intKey = (key.Value.Value is int) ? (int)key.Value.Value : (int?)null;
@@ -667,8 +663,12 @@ namespace MessagePack.CodeGenerator
                         ShortTypeName = item.Type.ToDisplayString(binaryWriteFormat)
                     };
                     if (!member.IsReadable && !member.IsWritable) continue;
+                    if (arguments.IgnoreReadOnly && !member.IsWritable) continue;
 
                     var key = item.GetAttributes().FirstOrDefault(x => x.AttributeClass == typeReferences.KeyAttribute)?.ConstructorArguments[0];
+
+                    if (key == null && arguments.IgnoreNotMarked) continue;
+
                     if (key == null) throw new MessagePackGeneratorResolveFailedException("all public members must mark KeyAttribute or IgnoreMemberAttribute." + " type: " + type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) + " member:" + item.Name);
 
                     var intKey = (key.Value.Value is int) ? (int)key.Value.Value : (int?)null;

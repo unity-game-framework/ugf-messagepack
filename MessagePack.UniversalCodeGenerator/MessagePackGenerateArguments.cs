@@ -1,5 +1,3 @@
-using Microsoft.CodeAnalysis.CSharp;
-
 namespace MessagePack.UniversalCodeGenerator
 {
     /// <summary>
@@ -13,15 +11,14 @@ namespace MessagePack.UniversalCodeGenerator
         public bool IgnoreReadOnly;
 
         /// <summary>
-        /// The value that determines whether target type must contains specific attribute.
+        /// The value that determines whether to ignore fields or properties which does not contain "KeyAttribute".
+        /// <para>
+        /// If this value is 'false', fields or properties must contains "KeyAttribute" and generator will throw exception if they not.
+        /// </para>
+        /// <para>
+        /// This parameter will not be used if the generator forced to use map serialization.
+        /// </para>
         /// </summary>
-        public bool IsTypeRequireAttribute;
-
-        /// <summary>
-        /// The short name of attribute that type must contains.
-        /// </summary>
-        public string TypeRequiredAttributeShortName;
-
-        public CSharpCompilation Compilation;
+        public bool IgnoreNotMarked;
     }
 }

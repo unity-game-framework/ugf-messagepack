@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-// using Microsoft.CodeAnalysis.CSharp.Formatting;
+using Microsoft.CodeAnalysis.CSharp.Formatting;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
@@ -271,58 +271,54 @@ namespace MessagePack.CodeGenerator
         //     Console.WriteLine(e);
         // }
 
-        public static Compilation GetCompilationFromProject(IEnumerable<string> inputFiles, IEnumerable<string> inputDirectories, string[] preprocessorSymbols, CSharpCompilation compilation = null)
+        public static Compilation GetCompilationFromProject(IEnumerable<string> inputFiles, IEnumerable<string> inputDirectories, string[] preprocessorSymbols)
         {
-            var parseOptions = new CSharpParseOptions(LanguageVersion.Default, DocumentationMode.Parse, SourceCodeKind.Regular, preprocessorSymbols ?? new string[0]);
-            var syntaxTrees = new List<SyntaxTree>();
-            var references = new List<MetadataReference>
-            {
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(System.Runtime.Serialization.DataMemberAttribute).Assembly.Location),
-            };
+            var workspace = new AdhocWorkspace();
+            Project project = workspace.AddProject("Project", LanguageNames.CSharp);
+            var parseOptions = (CSharpParseOptions)project.ParseOptions;
 
-            foreach (var dir in inputDirectories ?? new string[0])
+            project = project.WithParseOptions(parseOptions.WithPreprocessorSymbols(preprocessorSymbols));
+            project = project.WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithAllowUnsafe(true));
+
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                var files = Directory.GetFiles(dir, "*.cs", SearchOption.AllDirectories);
-                foreach (var file in files)
+                if (!assembly.IsDynamic)
                 {
-                    var text = File.ReadAllText(file);
-                    syntaxTrees.Add(CSharpSyntaxTree.ParseText(text, parseOptions));
+                    project = project.AddMetadataReference(MetadataReference.CreateFromFile(assembly.Location));
                 }
             }
 
-            foreach (var path in inputFiles ?? new string[0])
+            foreach (string path in inputFiles)
             {
                 if (path.EndsWith(".cs", StringComparison.Ordinal))
                 {
-                    var text = File.ReadAllText(path);
-                    syntaxTrees.Add(CSharpSyntaxTree.ParseText(text, parseOptions));
+                    string fullPath = Path.GetFullPath(path);
+
+                    project = project.AddDocument(fullPath, File.ReadAllText(fullPath)).Project;
                 }
-                else if (path.EndsWith(".dll", StringComparison.Ordinal))
+            }
+
+            if (inputDirectories != null)
+            {
+                foreach (string dir in inputDirectories)
                 {
-                    references.Add(MetadataReference.CreateFromFile(path));
+                    string[] files = Directory.GetFiles(dir, "*.cs", SearchOption.AllDirectories);
+
+                    foreach (string file in files)
+                    {
+                        string fullPath = Path.GetFullPath(file);
+
+                        project = project.AddDocument(fullPath, File.ReadAllText(fullPath)).Project;
+                    }
                 }
             }
 
-            if (compilation == null)
+            if (!workspace.TryApplyChanges(project.Solution))
             {
-                compilation = CSharpCompilation.Create(
-                    "Assembly-CSharp",
-                    syntaxTrees: syntaxTrees,
-                    references: references
-                );
-
-                Assembly messagePackAssembly = AppDomain.CurrentDomain.GetAssemblies().First(x => x.GetName().Name == "MessagePack");
-
-                compilation = compilation.AddReferences(MetadataReference.CreateFromFile(messagePackAssembly.Location));
-            }
-            else
-            {
-                compilation.AddSyntaxTrees(syntaxTrees);
+                throw new InvalidOperationException("Failed to apply changes to workspace.");
             }
 
-            return compilation;
+            return project.GetCompilationAsync().Result;
         }
 
         public static IEnumerable<INamedTypeSymbol> GetNamedTypeSymbols(this Compilation compilation)
