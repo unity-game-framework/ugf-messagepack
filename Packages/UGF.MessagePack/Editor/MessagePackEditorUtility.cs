@@ -12,7 +12,10 @@ using Microsoft.CodeAnalysis.Editing;
 using UGF.Assemblies.Editor;
 using UGF.Code.Analysis.Editor;
 using UGF.Code.Generate.Editor;
-using UGF.MessagePack.Editor.Analysis;
+using UGF.Code.Generate.Editor.Container;
+using UGF.Code.Generate.Editor.Container.External;
+using UGF.Code.Generate.Editor.Experimental;
+using UGF.MessagePack.Editor.ExternalType;
 using UnityEditor;
 using UnityEditor.Compilation;
 using MessagePackFormatterAttribute = UGF.MessagePack.Runtime.MessagePackFormatterAttribute;
@@ -79,19 +82,35 @@ namespace UGF.MessagePack.Editor
                 }
             }
 
-            // var externals = new List<string>();
+            var externals = new List<string>();
             string externalsTempPath = string.Empty;
 
-            // AssemblyEditorUtility.GetAssetPathsUnderAssemblyDefinitionFile(externals, path, Utf8JsonExternalTypeEditorUtility.ExternalTypeAssetExtension);
-            //
-            // if (externals.Count > 0)
-            // {
-            //     externalsTempPath = FileUtil.GetUniqueTempPathInProject();
-            //
-            //     Directory.CreateDirectory(externalsTempPath);
-            //
-            //     Utf8JsonExternalTypeEditorUtility.GenerateExternalContainers(externalsTempPath, externals, sourcePaths, compilation, generator);
-            // }
+            AssemblyEditorUtility.GetAssetPathsUnderAssemblyDefinitionFile(externals, path, MessagePackExternalTypeUtility.ExternalTypeAssetExtension);
+
+            if (externals.Count > 0)
+            {
+                externalsTempPath = FileUtil.GetUniqueTempPathInProject();
+
+                Directory.CreateDirectory(externalsTempPath);
+
+                for (int i = 0; i < externals.Count; i++)
+                {
+                    string externalPath = externals[i];
+
+                    if (CodeGenerateContainerExternalEditorUtility.TryGetInfoFromAssetPath(externalPath, out MessagePackExternalTypeInfo info) && info.IsValid())
+                    {
+                        CodeGenerateContainer container = CodeGenerateContainerExternalEditorUtility.CreateContainer(info, null, compilation);
+                        SyntaxNode unit = CodeGenerateContainerEditorUtility.CreateUnit(container, generator);
+
+                        string sourcePath = $"{externalsTempPath}/{Guid.NewGuid():N}.cs";
+                        string source = unit.NormalizeWhitespace().ToFullString();
+
+                        File.WriteAllText(sourcePath, source);
+
+                        sourcePaths.Add(sourcePath);
+                    }
+                }
+            }
 
             string formatters = GenerateFormatters(sourcePaths, assembly.name, compilation, generator);
 
@@ -127,7 +146,7 @@ namespace UGF.MessagePack.Editor
             var attributeType = (TypeSyntax)generator.TypeExpression(attributeTypeSymbol);
 
             var walkerCollectUsings = new CodeGenerateWalkerCollectUsingDirectives();
-            var rewriterAddAttribute = new MessagePackRewriterAddFormatterAttribute(generator, attributeType);
+            var rewriterAddAttribute = new CodeGenerateRewriterAddAttributeFromGenericArgument(generator, attributeType, "IMessagePackFormatter");
             var rewriterFormatAttribute = new CodeGenerateRewriterFormatAttributeList();
 
             for (int i = 0; i < sourcePaths.Count; i++)
