@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace UGF.MessagePack.Runtime.Tests.TestAssembly
 {
-    [MessagePackObject]
-    public class TestTarget
+    [MessagePackObject(true)]
+    public class TestTarget : TestAbstractTarget
     {
         [Key(0)]
         public string Name { get; set; } = "TestTarget";
@@ -28,5 +28,13 @@ namespace UGF.MessagePack.Runtime.Tests.TestAssembly
         public HideFlags Flags { get; set; } = HideFlags.DontSave;
 
         public int ReadOnly { get; } = 10;
+
+        [Key(7)]
+        public override int VirtualProperty { get; set; } = 5;
+    }
+
+    public abstract class TestAbstractTarget
+    {
+        public virtual int VirtualProperty { get; set; } = 10;
     }
 }

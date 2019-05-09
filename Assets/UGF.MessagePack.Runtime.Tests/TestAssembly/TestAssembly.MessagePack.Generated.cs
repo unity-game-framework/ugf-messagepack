@@ -53,6 +53,37 @@ namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
     public sealed class TestTargetFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UGF.MessagePack.Runtime.Tests.TestAssembly.TestTarget>
     {
 
+        readonly global::MessagePack.Internal.AutomataDictionary ____keyMapping;
+        readonly byte[][] ____stringByteKeys;
+
+        public TestTargetFormatter()
+        {
+            this.____keyMapping = new global::MessagePack.Internal.AutomataDictionary()
+            {
+                { "Name", 0},
+                { "BoolValue", 1},
+                { "FloatValue", 2},
+                { "IntValue", 3},
+                { "Vector2", 4},
+                { "Bounds", 5},
+                { "Flags", 6},
+                { "VirtualProperty", 7},
+            };
+
+            this.____stringByteKeys = new byte[][]
+            {
+                global::MessagePack.Internal.CodeGenHelpers.GetEncodedStringBytes("Name"),
+                global::MessagePack.Internal.CodeGenHelpers.GetEncodedStringBytes("BoolValue"),
+                global::MessagePack.Internal.CodeGenHelpers.GetEncodedStringBytes("FloatValue"),
+                global::MessagePack.Internal.CodeGenHelpers.GetEncodedStringBytes("IntValue"),
+                global::MessagePack.Internal.CodeGenHelpers.GetEncodedStringBytes("Vector2"),
+                global::MessagePack.Internal.CodeGenHelpers.GetEncodedStringBytes("Bounds"),
+                global::MessagePack.Internal.CodeGenHelpers.GetEncodedStringBytes("Flags"),
+                global::MessagePack.Internal.CodeGenHelpers.GetEncodedStringBytes("VirtualProperty"),
+            };
+        }
+
+
         public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::UGF.MessagePack.Runtime.Tests.TestAssembly.TestTarget value, global::MessagePack.IFormatterResolver formatterResolver)
         {
             if (value == null)
@@ -60,14 +91,23 @@ namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
                 writer.WriteNil();
                 return;
             }
-            writer.WriteFixedArrayHeaderUnsafe(7);
+            writer.WriteMapHeader(8);
+            writer.WriteRaw(this.____stringByteKeys[0]);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.Name, formatterResolver);
+            writer.WriteRaw(this.____stringByteKeys[1]);
             writer.Write(value.BoolValue);
+            writer.WriteRaw(this.____stringByteKeys[2]);
             writer.Write(value.FloatValue);
+            writer.WriteRaw(this.____stringByteKeys[3]);
             writer.Write(value.IntValue);
+            writer.WriteRaw(this.____stringByteKeys[4]);
             formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector2>().Serialize(ref writer, value.Vector2, formatterResolver);
+            writer.WriteRaw(this.____stringByteKeys[5]);
             formatterResolver.GetFormatterWithVerify<global::UnityEngine.Bounds>().Serialize(ref writer, value.Bounds, formatterResolver);
+            writer.WriteRaw(this.____stringByteKeys[6]);
             formatterResolver.GetFormatterWithVerify<global::UnityEngine.HideFlags>().Serialize(ref writer, value.Flags, formatterResolver);
+            writer.WriteRaw(this.____stringByteKeys[7]);
+            writer.Write(value.VirtualProperty);
         }
 
         public global::UGF.MessagePack.Runtime.Tests.TestAssembly.TestTarget Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.IFormatterResolver formatterResolver)
@@ -77,7 +117,7 @@ namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
                 return null;
             }
 
-            var length = reader.ReadArrayHeader();
+            var length = reader.ReadMapHeader();
 
             var __Name__ = default(string);
             var __BoolValue__ = default(bool);
@@ -86,10 +126,17 @@ namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
             var __Vector2__ = default(global::UnityEngine.Vector2);
             var __Bounds__ = default(global::UnityEngine.Bounds);
             var __Flags__ = default(global::UnityEngine.HideFlags);
+            var __VirtualProperty__ = default(int);
 
             for (int i = 0; i < length; i++)
             {
-                var key = i;
+                var stringKey = reader.ReadStringSegment();
+                int key;
+                if (!____keyMapping.TryGetValue(stringKey, out key))
+                {{
+                    reader.Skip();
+                    continue;
+                }}
 
                 switch (key)
                 {
@@ -114,6 +161,9 @@ namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
                     case 6:
                         __Flags__ = formatterResolver.GetFormatterWithVerify<global::UnityEngine.HideFlags>().Deserialize(ref reader, formatterResolver);
                         break;
+                    case 7:
+                        __VirtualProperty__ = reader.ReadInt32();
+                        break;
                     default:
                         reader.Skip();
                         break;
@@ -128,6 +178,7 @@ namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
             ____result.Vector2 = __Vector2__;
             ____result.Bounds = __Bounds__;
             ____result.Flags = __Flags__;
+            ____result.VirtualProperty = __VirtualProperty__;
             return ____result;
         }
     }

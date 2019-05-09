@@ -9,5 +9,51 @@ ScriptedImporter:
   assetBundleVariant: 
   script: {fileID: 11500000, guid: 1184ae768d796ee4d830325a44a34be4, type: 3}
   info:
-    typeName: 
-    members: []
+    typeName: UnityEngine.AI.NavMeshBuildSettings, UnityEngine.AIModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    members:
+    - name: agentTypeID
+      active: 1
+      intKey: 0
+      stringKey: agentTypeID
+    - name: agentRadius
+      active: 1
+      intKey: 1
+      stringKey: agentRadius
+    - name: agentHeight
+      active: 1
+      intKey: 2
+      stringKey: agentHeight
+    - name: agentSlope
+      active: 1
+      intKey: 3
+      stringKey: agentSlope
+    - name: agentClimb
+      active: 1
+      intKey: 4
+      stringKey: agentClimb
+    - name: minRegionArea
+      active: 1
+      intKey: 5
+      stringKey: minRegionArea
+    - name: overrideVoxelSize
+      active: 1
+      intKey: 6
+      stringKey: overrideVoxelSize
+    - name: voxelSize
+      active: 1
+      intKey: 7
+      stringKey: voxelSize
+    - name: overrideTileSize
+      active: 1
+      intKey: 8
+      stringKey: overrideTileSize
+    - name: tileSize
+      active: 1
+      intKey: 9
+      stringKey: tileSize
+    - name: debug
+      active: 1
+      intKey: 10
+      stringKey: debug
+    keyAsPropertyName: 0
