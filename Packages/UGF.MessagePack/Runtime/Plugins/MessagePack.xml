@@ -134,6 +134,11 @@
             <param name="resolver">The resolver to use to obtain formatters for types that make up the composite type <typeparamref name="T"/>.</param>
             <returns>The deserialized value.</returns>
         </member>
+        <member name="T:MessagePack.Formatters.IMessagePackFormatter">
+            <summary>
+            The contract for serialization of some specific type.
+            </summary>
+        </member>
         <member name="T:MessagePack.Formatters.TypelessFormatter">
             <summary>
             For `object` field that holds derived from `object` value, ex: var arr = new object[] { 1, "a", new Model() };

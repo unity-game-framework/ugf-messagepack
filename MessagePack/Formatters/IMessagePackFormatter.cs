@@ -6,7 +6,7 @@ namespace MessagePack.Formatters
     /// The contract for serialization of some specific type.
     /// </summary>
     /// <typeparam name="T">The type to be serialized or deserialized.</typeparam>
-    public interface IMessagePackFormatter<T>
+    public interface IMessagePackFormatter<T> : IMessagePackFormatter
     {
         /// <summary>
         /// Serializes a value.
@@ -23,5 +23,12 @@ namespace MessagePack.Formatters
         /// <param name="resolver">The resolver to use to obtain formatters for types that make up the composite type <typeparamref name="T"/>.</param>
         /// <returns>The deserialized value.</returns>
         T Deserialize(ref MessagePackReader reader, IFormatterResolver resolver);
+    }
+
+    /// <summary>
+    /// The contract for serialization of some specific type.
+    /// </summary>
+    public interface IMessagePackFormatter
+    {
     }
 }

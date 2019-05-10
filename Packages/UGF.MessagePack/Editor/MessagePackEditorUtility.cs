@@ -83,7 +83,7 @@ namespace UGF.MessagePack.Editor
             var externals = new List<string>();
             string externalsTempPath = string.Empty;
 
-            AssemblyEditorUtility.GetAssetPathsUnderAssemblyDefinitionFile(externals, path, $".{MessagePackExternalTypeEditorUtility.ExternalTypeAssetExtensionName}");
+            AssemblyEditorUtility.GetAssetPathsUnderAssemblyDefinitionFile(externals, path, MessagePackExternalTypeEditorUtility.ExternalTypeAssetExtensionName);
 
             if (externals.Count > 0)
             {
