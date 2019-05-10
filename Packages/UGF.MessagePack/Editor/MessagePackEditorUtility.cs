@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using MessagePack;
 using MessagePack.UniversalCodeGenerator;
 using Microsoft.CodeAnalysis;
@@ -12,7 +11,6 @@ using Microsoft.CodeAnalysis.Editing;
 using UGF.Assemblies.Editor;
 using UGF.Code.Analysis.Editor;
 using UGF.Code.Generate.Editor;
-using UGF.Code.Generate.Editor.Container;
 using UGF.Code.Generate.Editor.Container.External;
 using UGF.Code.Generate.Editor.Experimental;
 using UGF.MessagePack.Editor.ExternalType;
@@ -34,13 +32,13 @@ namespace UGF.MessagePack.Editor
         /// <param name="import">The value determines whether to force asset database import.</param>
         /// <param name="compilation">The project compilation used during generation.</param>
         /// <param name="generator">The syntax generator used during generation.</param>
-        public static void GenerateAssetFromAssembly(string path, bool import = true, CSharpCompilation compilation = null, SyntaxGenerator generator = null)
+        public static void GenerateAssetFromAssembly(string path, bool import = true, Compilation compilation = null, SyntaxGenerator generator = null)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (compilation == null) compilation = CodeAnalysisEditorUtility.ProjectCompilation;
             if (generator == null) generator = CodeAnalysisEditorUtility.Generator;
 
-            string sourcePath = GetPathForGeneratedScript(path);
+            string sourcePath = CodeGenerateEditorUtility.GetPathForGeneratedScript(path, "MessagePack");
             string source = GenerateFromAssembly(path, compilation, generator);
 
             File.WriteAllText(sourcePath, source);
@@ -57,7 +55,7 @@ namespace UGF.MessagePack.Editor
         /// <param name="path">The path of the assembly definition file.</param>
         /// <param name="compilation">The project compilation used during generation.</param>
         /// <param name="generator">The syntax generator used during generation.</param>
-        public static string GenerateFromAssembly(string path, CSharpCompilation compilation = null, SyntaxGenerator generator = null)
+        public static string GenerateFromAssembly(string path, Compilation compilation = null, SyntaxGenerator generator = null)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (compilation == null) compilation = CodeAnalysisEditorUtility.ProjectCompilation;
@@ -85,7 +83,7 @@ namespace UGF.MessagePack.Editor
             var externals = new List<string>();
             string externalsTempPath = string.Empty;
 
-            AssemblyEditorUtility.GetAssetPathsUnderAssemblyDefinitionFile(externals, path, MessagePackExternalTypeEditorUtility.ExternalTypeAssetExtension);
+            AssemblyEditorUtility.GetAssetPathsUnderAssemblyDefinitionFile(externals, path, $".{MessagePackExternalTypeEditorUtility.ExternalTypeAssetExtensionName}");
 
             if (externals.Count > 0)
             {
@@ -97,10 +95,9 @@ namespace UGF.MessagePack.Editor
                 {
                     string externalPath = externals[i];
 
-                    if (CodeGenerateContainerExternalEditorUtility.TryGetInfoFromAssetPath(externalPath, out MessagePackExternalTypeInfo info) && info.IsValid())
+                    if (CodeGenerateContainerExternalEditorUtility.TryGetInfoFromAssetPath(externalPath, out MessagePackExternalTypeInfo info) && info.TryGetTargetType(out _))
                     {
-                        CodeGenerateContainer container = CodeGenerateContainerExternalEditorUtility.CreateContainer(info, null, compilation);
-                        SyntaxNode unit = CodeGenerateContainerEditorUtility.CreateUnit(container, generator);
+                        SyntaxNode unit = MessagePackExternalTypeEditorUtility.CreateUnit(info, null, compilation, generator);
 
                         string sourcePath = $"{externalsTempPath}/{Guid.NewGuid():N}.cs";
                         string source = unit.NormalizeWhitespace().ToFullString();
@@ -129,7 +126,7 @@ namespace UGF.MessagePack.Editor
         /// <param name="namespaceRoot">The namespace root of the generated formatters.</param>
         /// <param name="compilation">The project compilation used during generation.</param>
         /// <param name="generator">The syntax generator used during generation.</param>
-        public static string GenerateFormatters(IReadOnlyList<string> sourcePaths, string namespaceRoot, CSharpCompilation compilation = null, SyntaxGenerator generator = null)
+        public static string GenerateFormatters(IReadOnlyList<string> sourcePaths, string namespaceRoot, Compilation compilation = null, SyntaxGenerator generator = null)
         {
             if (sourcePaths == null) throw new ArgumentNullException(nameof(sourcePaths));
             if (namespaceRoot == null) throw new ArgumentNullException(nameof(namespaceRoot));
@@ -166,37 +163,11 @@ namespace UGF.MessagePack.Editor
         }
 
         /// <summary>
-        /// Gets path for generated source from the specified path.
-        /// </summary>
-        /// <param name="path">The path used to generated.</param>
-        public static string GetPathForGeneratedScript(string path)
-        {
-            if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
-
-            var builder = new StringBuilder();
-            string directory = Path.GetDirectoryName(path);
-            string name = Path.GetFileNameWithoutExtension(path);
-
-            if (!string.IsNullOrEmpty(directory))
-            {
-                directory = directory.Replace("\\", "/");
-
-                builder.Append(directory);
-                builder.Append("/");
-            }
-
-            builder.Append(name);
-            builder.Append(".MessagePack.Generated.cs");
-
-            return builder.ToString();
-        }
-
-        /// <summary>
         /// Determines whether source from the specified path contains any declaration with the <see cref="MessagePackObjectAttribute"/> attribute.
         /// </summary>
         /// <param name="path">The path of the source.</param>
-        /// <param name="compilation">The project compilation used during generation.</param>
-        public static bool IsSerializableScript(string path, CSharpCompilation compilation = null)
+        /// <param name="compilation">The project compilation.</param>
+        public static bool IsSerializableScript(string path, Compilation compilation = null)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (compilation == null) compilation = CodeAnalysisEditorUtility.ProjectCompilation;

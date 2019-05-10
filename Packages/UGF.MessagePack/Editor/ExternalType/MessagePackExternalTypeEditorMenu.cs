@@ -9,7 +9,7 @@ namespace UGF.MessagePack.Editor.ExternalType
         private static void ExternalTypeCreateMenu()
         {
             Texture2D icon = AssetPreview.GetMiniTypeThumbnail(typeof(TextAsset));
-            string extension = MessagePackExternalTypeEditorUtility.ExternalTypeAssetExtension;
+            string extension = MessagePackExternalTypeEditorUtility.ExternalTypeAssetExtensionName;
 
             ProjectWindowUtil.CreateAssetWithContent($"New MessagePack External Type.{extension}", "{}", icon);
         }

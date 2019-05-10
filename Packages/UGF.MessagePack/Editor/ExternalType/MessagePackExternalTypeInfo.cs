@@ -10,10 +10,5 @@ namespace UGF.MessagePack.Editor.ExternalType
         [SerializeField] private bool m_keyAsPropertyName;
 
         public bool KeyAsPropertyName { get { return m_keyAsPropertyName; } set { m_keyAsPropertyName = value; } }
-
-        public bool IsValid()
-        {
-            return TryGetTargetType(out _);
-        }
     }
 }

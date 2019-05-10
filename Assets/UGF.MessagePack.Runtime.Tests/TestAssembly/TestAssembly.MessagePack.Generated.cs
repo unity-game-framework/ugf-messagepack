@@ -190,3 +190,129 @@ namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
 #pragma warning restore 618
 #pragma warning restore 612
 
+#pragma warning disable 618
+#pragma warning disable 612
+#pragma warning disable 414
+#pragma warning disable 168
+
+namespace TestAssembly.Formatters.UnityEngine.AI
+{
+    using System;
+	using System.Buffers;
+    using MessagePack;
+
+
+    [global::UGF.MessagePack.Runtime.MessagePackFormatterAttribute(typeof(global::UnityEngine.AI.NavMeshBuildSettings))]
+    public sealed class NavMeshBuildSettingsFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UnityEngine.AI.NavMeshBuildSettings>
+    {
+
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::UnityEngine.AI.NavMeshBuildSettings value, global::MessagePack.IFormatterResolver formatterResolver)
+        {
+            writer.WriteArrayHeader(21);
+            writer.Write(value.agentTypeID);
+            writer.Write(value.agentRadius);
+            writer.Write(value.agentHeight);
+            writer.Write(value.agentSlope);
+            writer.Write(value.agentClimb);
+            writer.Write(value.minRegionArea);
+            writer.Write(value.overrideVoxelSize);
+            writer.Write(value.voxelSize);
+            writer.Write(value.overrideTileSize);
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.Write(value.tileSize);
+        }
+
+        public global::UnityEngine.AI.NavMeshBuildSettings Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.IFormatterResolver formatterResolver)
+        {
+            if (reader.TryReadNil())
+            {
+                throw new InvalidOperationException("typecode is null, struct not supported");
+            }
+
+            var length = reader.ReadArrayHeader();
+
+            var __agentTypeID__ = default(int);
+            var __agentRadius__ = default(float);
+            var __agentHeight__ = default(float);
+            var __agentSlope__ = default(float);
+            var __agentClimb__ = default(float);
+            var __minRegionArea__ = default(float);
+            var __overrideVoxelSize__ = default(bool);
+            var __voxelSize__ = default(float);
+            var __overrideTileSize__ = default(bool);
+            var __tileSize__ = default(int);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __agentTypeID__ = reader.ReadInt32();
+                        break;
+                    case 1:
+                        __agentRadius__ = reader.ReadSingle();
+                        break;
+                    case 2:
+                        __agentHeight__ = reader.ReadSingle();
+                        break;
+                    case 3:
+                        __agentSlope__ = reader.ReadSingle();
+                        break;
+                    case 4:
+                        __agentClimb__ = reader.ReadSingle();
+                        break;
+                    case 5:
+                        __minRegionArea__ = reader.ReadSingle();
+                        break;
+                    case 6:
+                        __overrideVoxelSize__ = reader.ReadBoolean();
+                        break;
+                    case 7:
+                        __voxelSize__ = reader.ReadSingle();
+                        break;
+                    case 8:
+                        __overrideTileSize__ = reader.ReadBoolean();
+                        break;
+                    case 20:
+                        __tileSize__ = reader.ReadInt32();
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::UnityEngine.AI.NavMeshBuildSettings();
+            ____result.agentTypeID = __agentTypeID__;
+            ____result.agentRadius = __agentRadius__;
+            ____result.agentHeight = __agentHeight__;
+            ____result.agentSlope = __agentSlope__;
+            ____result.agentClimb = __agentClimb__;
+            ____result.minRegionArea = __minRegionArea__;
+            ____result.overrideVoxelSize = __overrideVoxelSize__;
+            ____result.voxelSize = __voxelSize__;
+            ____result.overrideTileSize = __overrideTileSize__;
+            ____result.tileSize = __tileSize__;
+            return ____result;
+        }
+    }
+
+}
+
+#pragma warning restore 168
+#pragma warning restore 414
+#pragma warning restore 618
+#pragma warning restore 612
+

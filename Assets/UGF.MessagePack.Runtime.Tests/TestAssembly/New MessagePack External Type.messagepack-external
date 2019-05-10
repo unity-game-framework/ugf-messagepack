@@ -58,12 +58,12 @@
         {
             "m_name": "tileSize",
             "m_active": true,
-            "m_intKey": 9,
+            "m_intKey": 20,
             "m_stringKey": "tileSize"
         },
         {
             "m_name": "debug",
-            "m_active": true,
+            "m_active": false,
             "m_intKey": 10,
             "m_stringKey": "debug"
         }
