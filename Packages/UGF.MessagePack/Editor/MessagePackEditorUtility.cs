@@ -11,12 +11,12 @@ using Microsoft.CodeAnalysis.Editing;
 using UGF.Assemblies.Editor;
 using UGF.Code.Analysis.Editor;
 using UGF.Code.Generate.Editor;
+using UGF.Code.Generate.Editor.Container;
 using UGF.Code.Generate.Editor.Container.External;
 using UGF.Code.Generate.Editor.Experimental;
 using UGF.MessagePack.Editor.ExternalType;
 using UnityEditor;
 using UnityEditor.Compilation;
-using MessagePackFormatterAttribute = UGF.MessagePack.Runtime.MessagePackFormatterAttribute;
 
 namespace UGF.MessagePack.Editor
 {
@@ -30,16 +30,18 @@ namespace UGF.MessagePack.Editor
         /// </summary>
         /// <param name="path">The path of the assembly definition file.</param>
         /// <param name="import">The value determines whether to force asset database import.</param>
+        /// <param name="validation">The container type validation used to generate externals.</param>
         /// <param name="compilation">The project compilation used during generation.</param>
         /// <param name="generator">The syntax generator used during generation.</param>
-        public static void GenerateAssetFromAssembly(string path, bool import = true, Compilation compilation = null, SyntaxGenerator generator = null)
+        public static void GenerateAssetFromAssembly(string path, bool import = true, ICodeGenerateContainerValidation validation = null, Compilation compilation = null, SyntaxGenerator generator = null)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
+            if (validation == null) validation = CodeGenerateContainerExternalEditorUtility.DefaultValidation;
             if (compilation == null) compilation = CodeAnalysisEditorUtility.ProjectCompilation;
             if (generator == null) generator = CodeAnalysisEditorUtility.Generator;
 
             string sourcePath = CodeGenerateEditorUtility.GetPathForGeneratedScript(path, "MessagePack");
-            string source = GenerateFromAssembly(path, compilation, generator);
+            string source = GenerateFromAssembly(path, validation, compilation, generator);
 
             File.WriteAllText(sourcePath, source);
 
@@ -53,11 +55,13 @@ namespace UGF.MessagePack.Editor
         /// Generates source of the generated code for assembly from the specified path.
         /// </summary>
         /// <param name="path">The path of the assembly definition file.</param>
+        /// <param name="validation">The container type validation used to generate externals.</param>
         /// <param name="compilation">The project compilation used during generation.</param>
         /// <param name="generator">The syntax generator used during generation.</param>
-        public static string GenerateFromAssembly(string path, Compilation compilation = null, SyntaxGenerator generator = null)
+        public static string GenerateFromAssembly(string path, ICodeGenerateContainerValidation validation = null, Compilation compilation = null, SyntaxGenerator generator = null)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
+            if (validation == null) validation = CodeGenerateContainerExternalEditorUtility.DefaultValidation;
             if (compilation == null) compilation = CodeAnalysisEditorUtility.ProjectCompilation;
             if (generator == null) generator = CodeAnalysisEditorUtility.Generator;
 
@@ -74,7 +78,7 @@ namespace UGF.MessagePack.Editor
             {
                 string sourcePath = assembly.sourceFiles[i];
 
-                if (IsSerializableScript(sourcePath))
+                if (CodeGenerateEditorUtility.CheckAttributeFromScript(compilation, sourcePath, typeof(MessagePackObjectAttribute)))
                 {
                     sourcePaths.Add(sourcePath);
                 }
@@ -97,7 +101,7 @@ namespace UGF.MessagePack.Editor
 
                     if (CodeGenerateContainerExternalEditorUtility.TryGetInfoFromAssetPath(externalPath, out MessagePackExternalTypeInfo info) && info.TryGetTargetType(out _))
                     {
-                        SyntaxNode unit = MessagePackExternalTypeEditorUtility.CreateUnit(info, null, compilation, generator);
+                        SyntaxNode unit = MessagePackExternalTypeEditorUtility.CreateUnit(info, validation, compilation, generator);
 
                         string sourcePath = $"{externalsTempPath}/{Guid.NewGuid():N}.cs";
                         string source = unit.NormalizeWhitespace().ToFullString();
@@ -133,17 +137,19 @@ namespace UGF.MessagePack.Editor
             if (compilation == null) compilation = CodeAnalysisEditorUtility.ProjectCompilation;
             if (generator == null) generator = CodeAnalysisEditorUtility.Generator;
 
+            if (!compilation.TryConstructTypeSymbol(typeof(MessagePackObjectAttribute), out INamedTypeSymbol attributeTypeSymbol))
+            {
+                throw new ArgumentException($"The '{typeof(MessagePackObjectAttribute).FullName}' type symbol not found in specified compilation.", nameof(compilation));
+            }
+
             var arguments = new MessagePackGenerateArguments
             {
                 IgnoreReadOnly = true,
                 IgnoreNotMarked = true
             };
 
-            INamedTypeSymbol attributeTypeSymbol = compilation.GetTypeByMetadataName(typeof(MessagePackFormatterAttribute).FullName);
-            var attributeType = (TypeSyntax)generator.TypeExpression(attributeTypeSymbol);
-
             var walkerCollectUsings = new CodeGenerateWalkerCollectUsingDirectives();
-            var rewriterAddAttribute = new CodeGenerateRewriterAddAttributeFromGenericArgument(generator, attributeType, "IMessagePackFormatter");
+            var rewriterAddAttribute = new CodeGenerateRewriterAddAttributeFromGenericArgument(generator, generator.TypeExpression(attributeTypeSymbol), "IMessagePackFormatter");
             var rewriterFormatAttribute = new CodeGenerateRewriterFormatAttributeList();
 
             for (int i = 0; i < sourcePaths.Count; i++)
@@ -160,19 +166,6 @@ namespace UGF.MessagePack.Editor
             unit = CodeGenerateEditorUtility.AddGeneratedCodeLeadingTrivia(unit);
 
             return unit.ToFullString();
-        }
-
-        /// <summary>
-        /// Determines whether source from the specified path contains any declaration with the <see cref="MessagePackObjectAttribute"/> attribute.
-        /// </summary>
-        /// <param name="path">The path of the source.</param>
-        /// <param name="compilation">The project compilation.</param>
-        public static bool IsSerializableScript(string path, Compilation compilation = null)
-        {
-            if (path == null) throw new ArgumentNullException(nameof(path));
-            if (compilation == null) compilation = CodeAnalysisEditorUtility.ProjectCompilation;
-
-            return CodeGenerateEditorUtility.CheckAttributeFromScript(compilation, path, typeof(MessagePackObjectAttribute));
         }
     }
 }
