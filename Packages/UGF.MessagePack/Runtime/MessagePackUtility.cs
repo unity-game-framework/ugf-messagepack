@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
+using MessagePack.Unity;
+using MessagePack.Unity.Extension;
 using UGF.Assemblies.Runtime;
 using UGF.MessagePack.Runtime.ExternalType;
 using UGF.MessagePack.Runtime.Resolvers.Enums;
@@ -26,6 +28,8 @@ namespace UGF.MessagePack.Runtime
                 MessagePackExternalTypeDefineUtility.GetFormatters(resolver.Formatters, assembly);
             }
 
+            resolver.Resolvers.Add(UnityBlitResolver.Instance);
+            resolver.Resolvers.Add(UnityResolver.Instance);
             resolver.Resolvers.Add(new EnumResolver());
             resolver.Resolvers.Add(BuiltinResolver.Instance);
 

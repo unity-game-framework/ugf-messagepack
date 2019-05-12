@@ -36,7 +36,7 @@ namespace MessagePack.UniversalCodeGenerator
         /// <param name="arguments">The generate arguments to control additional generation behaviour.</param>
         public static string Generate(IEnumerable<string> inputFiles, IEnumerable<string> inputDirectories = null, IEnumerable<string> conditionalSymbols = null, bool useMap = false, string resolverName = "GeneratedResolver", string namespaceRoot = "MessagePack", MessagePackGenerateArguments arguments = default(MessagePackGenerateArguments))
         {
-            return InternalGenerate(InternalGetArguments(inputFiles, inputDirectories, conditionalSymbols, useMap, namespaceRoot, resolverName), arguments, true);
+            return InternalGenerate(InternalGetArguments(inputFiles, inputDirectories, conditionalSymbols, useMap, resolverName, namespaceRoot), arguments, true);
         }
 
         /// <summary>

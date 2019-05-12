@@ -146,7 +146,9 @@ namespace UGF.MessagePack.Editor
             var arguments = new MessagePackGenerateArguments
             {
                 IgnoreReadOnly = true,
-                IgnoreNotMarked = true
+                IgnoreNotMarked = true,
+                GenerateEnumFormatters = true,
+                GenerateUnionFormatters = true
             };
 
             var walkerCollectUsings = new CodeGenerateWalkerCollectUsingDirectives();
@@ -158,7 +160,10 @@ namespace UGF.MessagePack.Editor
                 walkerCollectUsings.Visit(SyntaxFactory.ParseSyntaxTree(File.ReadAllText(sourcePaths[i])).GetRoot());
             }
 
-            string formatters = MessagePackUniversalCodeGeneratorUtility.GenerateFormatters(sourcePaths, namespaceRoot, arguments);
+            // string formatters = MessagePackUniversalCodeGeneratorUtility.GenerateFormatters(sourcePaths, namespaceRoot, arguments);
+
+            string formatters = MessagePackUniversalCodeGeneratorUtility.Generate(sourcePaths, "Resolver", namespaceRoot, arguments);
+
             CompilationUnitSyntax unit = SyntaxFactory.ParseCompilationUnit(formatters);
 
             unit = unit.AddUsings(walkerCollectUsings.UsingDirectives.Select(x => x.WithoutLeadingTrivia()).ToArray());
