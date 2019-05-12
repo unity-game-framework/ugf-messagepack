@@ -1,11 +1,10 @@
-using System;
 using System.Runtime.CompilerServices;
 using MessagePack;
 using MessagePack.Formatters;
 
 namespace UGF.MessagePack.Runtime.Resolvers.Enums
 {
-    public class EnumFormatterSByte<TValue> : IMessagePackFormatter<TValue> where TValue : Enum
+    public class EnumFormatterSByte<TValue> : IMessagePackFormatter<TValue>
     {
         public void Serialize(ref MessagePackWriter writer, TValue value, IFormatterResolver resolver)
         {

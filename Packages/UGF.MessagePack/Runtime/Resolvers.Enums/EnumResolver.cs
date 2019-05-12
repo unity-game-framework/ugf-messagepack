@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using MessagePack;
 using MessagePack.Formatters;
 
@@ -7,38 +6,61 @@ namespace UGF.MessagePack.Runtime.Resolvers.Enums
 {
     public class EnumResolver : IFormatterResolver
     {
-        public Dictionary<Type, Type> UnderlyingTypeFormatterTypeDefinitions { get; } = new Dictionary<Type, Type>
-        {
-            { typeof(byte), typeof(EnumFormatterByte<>) },
-            { typeof(sbyte), typeof(EnumFormatterSByte<>) },
-            { typeof(short), typeof(EnumFormatterInt16<>) },
-            { typeof(ushort), typeof(EnumFormatterUInt16<>) },
-            { typeof(int), typeof(EnumFormatterInt32<>) },
-            { typeof(uint), typeof(EnumFormatterUInt32<>) },
-            { typeof(long), typeof(EnumFormatterInt64<>) },
-            { typeof(ulong), typeof(EnumFormatterUInt64<>) }
-        };
-
         public IMessagePackFormatter<T> GetFormatter<T>()
         {
             IMessagePackFormatter<T> formatter = MessagePackFormatterCache<T>.Formatter;
 
-            if (formatter == null)
+            if (formatter == null && typeof(T).IsEnum)
             {
                 Type underlyingType = typeof(T).GetEnumUnderlyingType();
+                TypeCode typeCode = Type.GetTypeCode(underlyingType);
 
-                if (!UnderlyingTypeFormatterTypeDefinitions.TryGetValue(underlyingType, out Type formatterTypeDefinition))
+                switch (typeCode)
                 {
-                    throw new ArgumentException($"Enum formatter type definition for specified underlying type not found: '{underlyingType}'.");
-                }
-
-                Type formatterType = formatterTypeDefinition.MakeGenericType(typeof(T));
-
-                formatter = Activator.CreateInstance(formatterType) as IMessagePackFormatter<T>;
-
-                if (formatter == null)
-                {
-                    throw new ArgumentException($"Failed to create instance of the specified enum formatter: '{formatterType}'.");
+                    case TypeCode.Byte:
+                    {
+                        formatter = new EnumFormatterByte<T>();
+                        break;
+                    }
+                    case TypeCode.Int16:
+                    {
+                        formatter = new EnumFormatterSByte<T>();
+                        break;
+                    }
+                    case TypeCode.Int32:
+                    {
+                        formatter = new EnumFormatterInt32<T>();
+                        break;
+                    }
+                    case TypeCode.Int64:
+                    {
+                        formatter = new EnumFormatterInt64<T>();
+                        break;
+                    }
+                    case TypeCode.SByte:
+                    {
+                        formatter = new EnumFormatterSByte<T>();
+                        break;
+                    }
+                    case TypeCode.UInt16:
+                    {
+                        formatter = new EnumFormatterUInt16<T>();
+                        break;
+                    }
+                    case TypeCode.UInt32:
+                    {
+                        formatter = new EnumFormatterUInt16<T>();
+                        break;
+                    }
+                    case TypeCode.UInt64:
+                    {
+                        formatter = new EnumFormatterUInt64<T>();
+                        break;
+                    }
+                    default:
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(typeCode), "The specified underlying type not supported.");
+                    }
                 }
 
                 MessagePackFormatterCache<T>.Formatter = formatter;
