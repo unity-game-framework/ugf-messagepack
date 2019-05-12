@@ -445,6 +445,16 @@
             </para>
             </summary>
         </member>
+        <member name="F:MessagePack.UniversalCodeGenerator.MessagePackGenerateArguments.GenerateEnumFormatters">
+            <summary>
+            The value that determines whether to generate formatters for Enums.
+            </summary>
+        </member>
+        <member name="F:MessagePack.UniversalCodeGenerator.MessagePackGenerateArguments.GenerateUnionFormatters">
+            <summary>
+            The value that determines whether to generate formatters for union types.
+            </summary>
+        </member>
         <member name="T:MessagePack.UniversalCodeGenerator.MessagePackUniversalCodeGeneratorUtility">
             <summary>
             Provides utilities to work with MessagePack UniversalCodeGenerator.

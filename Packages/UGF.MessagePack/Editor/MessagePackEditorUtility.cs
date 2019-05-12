@@ -17,6 +17,7 @@ using UGF.Code.Generate.Editor.Experimental;
 using UGF.MessagePack.Editor.ExternalType;
 using UnityEditor;
 using UnityEditor.Compilation;
+using MessagePackFormatterAttribute = UGF.MessagePack.Runtime.MessagePackFormatterAttribute;
 
 namespace UGF.MessagePack.Editor
 {
@@ -137,9 +138,9 @@ namespace UGF.MessagePack.Editor
             if (compilation == null) compilation = CodeAnalysisEditorUtility.ProjectCompilation;
             if (generator == null) generator = CodeAnalysisEditorUtility.Generator;
 
-            if (!compilation.TryConstructTypeSymbol(typeof(MessagePackObjectAttribute), out INamedTypeSymbol attributeTypeSymbol))
+            if (!compilation.TryConstructTypeSymbol(typeof(MessagePackFormatterAttribute), out INamedTypeSymbol attributeTypeSymbol))
             {
-                throw new ArgumentException($"The '{typeof(MessagePackObjectAttribute).FullName}' type symbol not found in specified compilation.", nameof(compilation));
+                throw new ArgumentException($"The '{typeof(MessagePackFormatterAttribute).FullName}' type symbol not found in specified compilation.", nameof(compilation));
             }
 
             var arguments = new MessagePackGenerateArguments

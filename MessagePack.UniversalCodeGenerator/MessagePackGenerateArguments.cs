@@ -20,5 +20,15 @@ namespace MessagePack.UniversalCodeGenerator
         /// </para>
         /// </summary>
         public bool IgnoreNotMarked;
+
+        /// <summary>
+        /// The value that determines whether to generate formatters for Enums.
+        /// </summary>
+        public bool GenerateEnumFormatters;
+
+        /// <summary>
+        /// The value that determines whether to generate formatters for union types.
+        /// </summary>
+        public bool GenerateUnionFormatters;
     }
 }

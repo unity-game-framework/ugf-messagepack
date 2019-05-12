@@ -129,23 +129,29 @@ namespace MessagePack.UniversalCodeGenerator
                 builder.AppendLine();
             }
 
-            foreach (EnumTemplate item in enumFormatterTemplates)
+            if (arguments2.GenerateEnumFormatters)
             {
-                string text = item.TransformText();
+                foreach (EnumTemplate item in enumFormatterTemplates)
+                {
+                    string text = item.TransformText();
 
-                builder.AppendLine(text);
+                    builder.AppendLine(text);
+                }
+
+                builder.AppendLine();
             }
 
-            builder.AppendLine();
-
-            foreach (UnionTemplate item in unionFormatterTemplates)
+            if (arguments2.GenerateUnionFormatters)
             {
-                string text = item.TransformText();
+                foreach (UnionTemplate item in unionFormatterTemplates)
+                {
+                    string text = item.TransformText();
 
-                builder.AppendLine(text);
+                    builder.AppendLine(text);
+                }
+
+                builder.AppendLine();
             }
-
-            builder.AppendLine();
 
             foreach (FormatterTemplate item in objectFormatterTemplates)
             {

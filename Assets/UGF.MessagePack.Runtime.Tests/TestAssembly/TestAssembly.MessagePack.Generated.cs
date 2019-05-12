@@ -8,40 +8,6 @@ using UnityEngine;
 #pragma warning disable 414
 #pragma warning disable 168
 
-namespace TestAssembly.Formatters.UnityEngine
-{
-    using System;
-	using System.Buffers;
-    using MessagePack;
-
-    [global::UGF.MessagePack.Runtime.MessagePackFormatterAttribute(typeof(global::UnityEngine.HideFlags))]
-    public sealed class HideFlagsFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UnityEngine.HideFlags>
-    {
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::UnityEngine.HideFlags value, global::MessagePack.IFormatterResolver formatterResolver)
-        {
-            writer.Write((Int32)value);
-        }
-        
-        public global::UnityEngine.HideFlags Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.IFormatterResolver formatterResolver)
-        {
-            return (global::UnityEngine.HideFlags)reader.ReadInt32();
-        }
-    }
-
-
-}
-
-#pragma warning restore 168
-#pragma warning restore 414
-#pragma warning restore 618
-#pragma warning restore 612
-
-
-#pragma warning disable 618
-#pragma warning disable 612
-#pragma warning disable 414
-#pragma warning disable 168
-
 namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
 {
     using System;

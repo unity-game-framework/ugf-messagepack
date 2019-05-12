@@ -5,6 +5,7 @@ using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using UGF.Assemblies.Runtime;
 using UGF.MessagePack.Runtime.ExternalType;
+using UGF.MessagePack.Runtime.Resolvers.Enums;
 using UGF.Types.Runtime;
 
 namespace UGF.MessagePack.Runtime
@@ -25,6 +26,7 @@ namespace UGF.MessagePack.Runtime
                 MessagePackExternalTypeDefineUtility.GetFormatters(resolver.Formatters, assembly);
             }
 
+            resolver.Resolvers.Add(new EnumResolver());
             resolver.Resolvers.Add(BuiltinResolver.Instance);
 
             return resolver;
