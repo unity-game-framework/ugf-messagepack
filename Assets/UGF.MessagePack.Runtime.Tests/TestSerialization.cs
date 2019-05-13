@@ -71,7 +71,7 @@ namespace UGF.MessagePack.Runtime.Tests
         {
             MessagePackFormatterResolver resolver = MessagePackUtility.CreateDefaultResolver();
 
-            resolver.CacheFormatters();
+            MessagePackUtility.SetupFormatterCache(resolver.Formatters);
 
             m_serializer = new MessagePackSerializer(resolver);
         }

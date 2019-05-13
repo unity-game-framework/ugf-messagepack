@@ -10,45 +10,50 @@ namespace UGF.MessagePack.Runtime
         public Dictionary<Type, IMessagePackFormatter> Formatters { get; } = new Dictionary<Type, IMessagePackFormatter>();
         public List<IFormatterResolver> Resolvers { get; } = new List<IFormatterResolver>();
 
-        IReadOnlyDictionary<Type, IMessagePackFormatter> IMessagePackFormatterResolver.Formatters { get { return Formatters; } }
-        IReadOnlyList<IFormatterResolver> IMessagePackFormatterResolver.Resolvers { get { return Resolvers; } }
+        IDictionary<Type, IMessagePackFormatter> IMessagePackFormatterResolver.Formatters { get { return Formatters; } }
+        IList<IFormatterResolver> IMessagePackFormatterResolver.Resolvers { get { return Resolvers; } }
 
-        public IMessagePackFormatter<T> GetFormatter<T>()
+        public virtual IMessagePackFormatter<T> GetFormatter<T>()
         {
             IMessagePackFormatter<T> formatter = MessagePackFormatterCache<T>.Formatter;
 
             if (formatter == null)
             {
-                if (Formatters.TryGetValue(typeof(T), out IMessagePackFormatter formatterBase) && formatterBase is IMessagePackFormatter<T> formatterGeneric)
+                if (TryGetFormatterFromFormatters(out formatter) || TryGetFormatterFromResolvers(out formatter))
                 {
-                    formatter = formatterGeneric;
-
                     MessagePackFormatterCache<T>.Formatter = formatter;
-                }
-                else
-                {
-                    for (int i = 0; i < Resolvers.Count; i++)
-                    {
-                        formatter = Resolvers[i].GetFormatter<T>();
-
-                        if (formatter != null)
-                        {
-                            MessagePackFormatterCache<T>.Formatter = formatter;
-                            break;
-                        }
-                    }
                 }
             }
 
             return formatter;
         }
 
-        public void CacheFormatters()
+        protected virtual bool TryGetFormatterFromFormatters<T>(out IMessagePackFormatter<T> formatter)
         {
-            foreach (KeyValuePair<Type, IMessagePackFormatter> pair in Formatters)
+            if (Formatters.TryGetValue(typeof(T), out IMessagePackFormatter formatterBase) && formatterBase is IMessagePackFormatter<T> formatterGeneric)
             {
-                MessagePackUtility.SetFormatterCache(pair.Key, pair.Value);
+                formatter = formatterGeneric;
+                return true;
             }
+
+            formatter = null;
+            return false;
+        }
+
+        protected virtual bool TryGetFormatterFromResolvers<T>(out IMessagePackFormatter<T> formatter)
+        {
+            for (int i = 0; i < Resolvers.Count; i++)
+            {
+                formatter = Resolvers[i].GetFormatter<T>();
+
+                if (formatter != null)
+                {
+                    return true;
+                }
+            }
+
+            formatter = null;
+            return false;
         }
     }
 }

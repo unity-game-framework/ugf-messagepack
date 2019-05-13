@@ -7,7 +7,7 @@ namespace UGF.MessagePack.Runtime
 {
     public interface IMessagePackFormatterResolver : IFormatterResolver
     {
-        IReadOnlyDictionary<Type, IMessagePackFormatter> Formatters { get; }
-        IReadOnlyList<IFormatterResolver> Resolvers { get; }
+        IDictionary<Type, IMessagePackFormatter> Formatters { get; }
+        IList<IFormatterResolver> Resolvers { get; }
     }
 }

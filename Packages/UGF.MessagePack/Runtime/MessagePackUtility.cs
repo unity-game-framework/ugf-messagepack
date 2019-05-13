@@ -14,10 +14,17 @@ namespace UGF.MessagePack.Runtime
 {
     public static class MessagePackUtility
     {
-        public static MessagePackFormatterResolver CreateDefaultResolver(bool includeFormatters = true, bool includeExternalDefines = true, Assembly assembly = null)
+        public static MessagePackFormatterResolver CreateDefaultResolver(bool includeFormatters = true, bool includeExternalDefines = true, bool includeResolvers = true, Assembly assembly = null)
         {
             var resolver = new MessagePackFormatterResolver();
 
+            SetupDefaultResolver(resolver, includeFormatters, includeExternalDefines, includeResolvers, assembly);
+
+            return resolver;
+        }
+
+        public static void SetupDefaultResolver(IMessagePackFormatterResolver resolver, bool includeFormatters = true, bool includeExternalDefines = true, bool includeResolvers = true, Assembly assembly = null)
+        {
             if (includeFormatters)
             {
                 GetFormatters(resolver.Formatters, assembly);
@@ -28,12 +35,13 @@ namespace UGF.MessagePack.Runtime
                 MessagePackExternalTypeDefineUtility.GetFormatters(resolver.Formatters, assembly);
             }
 
-            resolver.Resolvers.Add(UnityBlitResolver.Instance);
-            resolver.Resolvers.Add(UnityResolver.Instance);
-            resolver.Resolvers.Add(new EnumResolver());
-            resolver.Resolvers.Add(BuiltinResolver.Instance);
-
-            return resolver;
+            if (includeResolvers)
+            {
+                resolver.Resolvers.Add(UnityBlitWithPrimitiveArrayResolver.Instance);
+                resolver.Resolvers.Add(UnityResolver.Instance);
+                resolver.Resolvers.Add(new EnumResolver());
+                resolver.Resolvers.Add(BuiltinResolver.Instance);
+            }
         }
 
         public static void GetFormatters(IDictionary<Type, IMessagePackFormatter> formatters, Assembly assembly = null)
@@ -48,6 +56,22 @@ namespace UGF.MessagePack.Runtime
                 {
                     formatters.Add(attribute.TargetType, formatter);
                 }
+            }
+        }
+
+        public static void SetupFormatterCache(IDictionary<Type, IMessagePackFormatter> formatters)
+        {
+            foreach (KeyValuePair<Type, IMessagePackFormatter> pair in formatters)
+            {
+                SetFormatterCache(pair.Key, pair.Value);
+            }
+        }
+
+        public static void ClearFormatterCache(IEnumerable<Type> types)
+        {
+            foreach (Type type in types)
+            {
+                SetFormatterCache(type, null);
             }
         }
 

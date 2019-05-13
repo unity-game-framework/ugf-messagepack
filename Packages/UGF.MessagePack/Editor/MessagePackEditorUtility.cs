@@ -160,10 +160,7 @@ namespace UGF.MessagePack.Editor
                 walkerCollectUsings.Visit(SyntaxFactory.ParseSyntaxTree(File.ReadAllText(sourcePaths[i])).GetRoot());
             }
 
-            // string formatters = MessagePackUniversalCodeGeneratorUtility.GenerateFormatters(sourcePaths, namespaceRoot, arguments);
-
-            string formatters = MessagePackUniversalCodeGeneratorUtility.Generate(sourcePaths, "Resolver", namespaceRoot, arguments);
-
+            string formatters = MessagePackUniversalCodeGeneratorUtility.GenerateFormatters(sourcePaths, namespaceRoot, arguments);
             CompilationUnitSyntax unit = SyntaxFactory.ParseCompilationUnit(formatters);
 
             unit = unit.AddUsings(walkerCollectUsings.UsingDirectives.Select(x => x.WithoutLeadingTrivia()).ToArray());
