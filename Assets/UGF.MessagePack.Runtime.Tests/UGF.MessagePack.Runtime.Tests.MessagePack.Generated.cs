@@ -16,14 +16,10 @@ namespace UGF.MessagePack.Runtime.Tests.Resolvers
     using System.Buffers;
     using MessagePack;
 
-    public class Resolver : global::MessagePack.IFormatterResolver
+    [global::UGF.MessagePack.Runtime.MessagePackFormatterResolverAttribute]
+    public class ResolverGenerated : global::MessagePack.IFormatterResolver
     {
-        public static readonly global::MessagePack.IFormatterResolver Instance = new Resolver();
-
-        Resolver()
-        {
-
-        }
+        public static readonly global::MessagePack.IFormatterResolver Instance = new ResolverGenerated();
 
         public global::MessagePack.Formatters.IMessagePackFormatter<T> GetFormatter<T>()
         {
@@ -36,7 +32,7 @@ namespace UGF.MessagePack.Runtime.Tests.Resolvers
 
             static FormatterCache()
             {
-                var f = ResolverGetFormatterHelper.GetFormatter(typeof(T));
+                var f = ResolverGeneratedGetFormatterHelper.GetFormatter(typeof(T));
                 if (f != null)
                 {
                     formatter = (global::MessagePack.Formatters.IMessagePackFormatter<T>)f;
@@ -45,11 +41,11 @@ namespace UGF.MessagePack.Runtime.Tests.Resolvers
         }
     }
 
-    internal static class ResolverGetFormatterHelper
+    internal static class ResolverGeneratedGetFormatterHelper
     {
         static readonly global::System.Collections.Generic.Dictionary<Type, int> lookup;
 
-        static ResolverGetFormatterHelper()
+        static ResolverGeneratedGetFormatterHelper()
         {
             lookup = new global::System.Collections.Generic.Dictionary<Type, int>(6)
             {
@@ -97,14 +93,13 @@ namespace UGF.MessagePack.Runtime.Tests.Formatters.UnityEngine
 	using System.Buffers;
     using MessagePack;
 
-    [global::UGF.MessagePack.Runtime.MessagePackFormatterAttribute(typeof(global::UnityEngine.HideFlags))]
     public sealed class HideFlagsFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UnityEngine.HideFlags>
     {
         public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::UnityEngine.HideFlags value, global::MessagePack.IFormatterResolver formatterResolver)
         {
             writer.Write((Int32)value);
         }
-        
+
         public global::UnityEngine.HideFlags Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.IFormatterResolver formatterResolver)
         {
             return (global::UnityEngine.HideFlags)reader.ReadInt32();
@@ -131,7 +126,6 @@ namespace UGF.MessagePack.Runtime.Tests.Formatters.UGF.MessagePack.Runtime.Tests
     using System.Collections.Generic;
     using MessagePack;
 
-    [global::UGF.MessagePack.Runtime.MessagePackFormatterAttribute(typeof(global::UGF.MessagePack.Runtime.Tests.TestSerialization.ITargetUnion))]
     public sealed class ITargetUnionFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UGF.MessagePack.Runtime.Tests.TestSerialization.ITargetUnion>
     {
         readonly Dictionary<RuntimeTypeHandle, KeyValuePair<int, int>> typeToKeyAndJumpMap;
@@ -234,7 +228,6 @@ namespace UGF.MessagePack.Runtime.Tests.Formatters.UGF.MessagePack.Runtime.Tests
     using MessagePack;
 
 
-    [global::UGF.MessagePack.Runtime.MessagePackFormatterAttribute(typeof(global::UGF.MessagePack.Runtime.Tests.TestSerialization.Target))]
     public sealed class TestSerialization_TargetFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UGF.MessagePack.Runtime.Tests.TestSerialization.Target>
     {
 
@@ -306,7 +299,6 @@ namespace UGF.MessagePack.Runtime.Tests.Formatters.UGF.MessagePack.Runtime.Tests
     }
 
 
-    [global::UGF.MessagePack.Runtime.MessagePackFormatterAttribute(typeof(global::UGF.MessagePack.Runtime.Tests.TestSerialization.Target2))]
     public sealed class TestSerialization_Target2Formatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UGF.MessagePack.Runtime.Tests.TestSerialization.Target2>
     {
 
@@ -378,7 +370,6 @@ namespace UGF.MessagePack.Runtime.Tests.Formatters.UGF.MessagePack.Runtime.Tests
     }
 
 
-    [global::UGF.MessagePack.Runtime.MessagePackFormatterAttribute(typeof(global::UGF.MessagePack.Runtime.Tests.TestSerialization.Target3))]
     public sealed class TestSerialization_Target3Formatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UGF.MessagePack.Runtime.Tests.TestSerialization.Target3>
     {
 
