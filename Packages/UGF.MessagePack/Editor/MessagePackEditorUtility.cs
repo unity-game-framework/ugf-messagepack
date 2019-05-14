@@ -13,11 +13,10 @@ using UGF.Code.Analysis.Editor;
 using UGF.Code.Generate.Editor;
 using UGF.Code.Generate.Editor.Container;
 using UGF.Code.Generate.Editor.Container.External;
-using UGF.Code.Generate.Editor.Experimental;
 using UGF.MessagePack.Editor.ExternalType;
+using UGF.MessagePack.Runtime;
 using UnityEditor;
 using UnityEditor.Compilation;
-using MessagePackFormatterAttribute = UGF.MessagePack.Runtime.MessagePackFormatterAttribute;
 
 namespace UGF.MessagePack.Editor
 {
@@ -138,9 +137,9 @@ namespace UGF.MessagePack.Editor
             if (compilation == null) compilation = CodeAnalysisEditorUtility.ProjectCompilation;
             if (generator == null) generator = CodeAnalysisEditorUtility.Generator;
 
-            if (!compilation.TryConstructTypeSymbol(typeof(MessagePackFormatterAttribute), out INamedTypeSymbol attributeTypeSymbol))
+            if (!compilation.TryConstructTypeSymbol(typeof(MessagePackFormatterResolverAttribute), out INamedTypeSymbol attributeTypeSymbol))
             {
-                throw new ArgumentException($"The '{typeof(MessagePackFormatterAttribute).FullName}' type symbol not found in specified compilation.", nameof(compilation));
+                throw new ArgumentException($"The '{typeof(MessagePackFormatterResolverAttribute).FullName}' type symbol not found in specified compilation.", nameof(compilation));
             }
 
             var arguments = new MessagePackGenerateArguments
@@ -152,7 +151,37 @@ namespace UGF.MessagePack.Editor
             };
 
             var walkerCollectUsings = new CodeGenerateWalkerCollectUsingDirectives();
-            var rewriterAddAttribute = new CodeGenerateRewriterAddAttributeFromGenericArgument(generator, generator.TypeExpression(attributeTypeSymbol), "IMessagePackFormatter");
+
+            var rewriterAddAttribute = new CodeGenerateRewriterAddAttributeToNode(generator, generator.Attribute(generator.TypeExpression(attributeTypeSymbol)), declaration =>
+            {
+                SyntaxKind kind = declaration.Kind();
+
+                if (kind == SyntaxKind.ClassDeclaration)
+                {
+                    var classDeclarationSyntax = (ClassDeclarationSyntax)declaration;
+
+                    if (classDeclarationSyntax.BaseList?.Types.Count > 0)
+                    {
+                        TypeSyntax typeSyntax = classDeclarationSyntax.BaseList.Types[0].Type;
+
+                        if (typeSyntax is NameSyntax nameSyntax)
+                        {
+                            if (nameSyntax is QualifiedNameSyntax qualifiedNameSyntax)
+                            {
+                                nameSyntax = qualifiedNameSyntax.Right;
+                            }
+
+                            if (nameSyntax is SimpleNameSyntax simpleNameSyntax && simpleNameSyntax.Identifier.Text == typeof(IFormatterResolver).Name)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            });
+
             var rewriterFormatAttribute = new CodeGenerateRewriterFormatAttributeList();
 
             for (int i = 0; i < sourcePaths.Count; i++)
@@ -160,7 +189,7 @@ namespace UGF.MessagePack.Editor
                 walkerCollectUsings.Visit(SyntaxFactory.ParseSyntaxTree(File.ReadAllText(sourcePaths[i])).GetRoot());
             }
 
-            string formatters = MessagePackUniversalCodeGeneratorUtility.GenerateFormatters(sourcePaths, namespaceRoot, arguments);
+            string formatters = MessagePackUniversalCodeGeneratorUtility.Generate(sourcePaths, "ResolverGenerated", namespaceRoot, arguments);
             CompilationUnitSyntax unit = SyntaxFactory.ParseCompilationUnit(formatters);
 
             unit = unit.AddUsings(walkerCollectUsings.UsingDirectives.Select(x => x.WithoutLeadingTrivia()).ToArray());

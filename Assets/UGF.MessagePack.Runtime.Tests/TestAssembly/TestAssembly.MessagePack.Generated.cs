@@ -15,7 +15,6 @@ namespace TestAssembly.Formatters.UGF.MessagePack.Runtime.Tests.TestAssembly
     using MessagePack;
 
 
-    [global::UGF.MessagePack.Runtime.MessagePackFormatterAttribute(typeof(global::UGF.MessagePack.Runtime.Tests.TestAssembly.TestTarget))]
     public sealed class TestTargetFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UGF.MessagePack.Runtime.Tests.TestAssembly.TestTarget>
     {
 
@@ -168,7 +167,6 @@ namespace TestAssembly.Formatters.UnityEngine.AI
     using MessagePack;
 
 
-    [global::UGF.MessagePack.Runtime.MessagePackFormatterAttribute(typeof(global::UnityEngine.AI.NavMeshBuildSettings))]
     public sealed class NavMeshBuildSettingsFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UnityEngine.AI.NavMeshBuildSettings>
     {
 

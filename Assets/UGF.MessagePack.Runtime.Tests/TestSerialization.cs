@@ -69,11 +69,7 @@ namespace UGF.MessagePack.Runtime.Tests
         [SetUp]
         public void Setup()
         {
-            MessagePackFormatterResolver resolver = MessagePackUtility.CreateDefaultResolver();
-
-            MessagePackUtility.SetupFormatterCache(resolver.Formatters);
-
-            m_serializer = new MessagePackSerializer(resolver);
+            m_serializer = new MessagePackSerializer(MessagePackUtility.CreateDefaultResolver());
         }
 
         [Test]
