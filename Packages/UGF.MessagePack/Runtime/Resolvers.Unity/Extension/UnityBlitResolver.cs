@@ -1,11 +1,12 @@
 ﻿// ReSharper disable all
 
-using MessagePack.Formatters;
 using System;
 using System.Collections.Generic;
+using MessagePack;
+using MessagePack.Formatters;
 using UnityEngine;
 
-namespace MessagePack.Unity.Extension
+namespace UGF.MessagePack.Runtime.Resolvers.Unity.Extension
 {
     /// <summary>
     /// Special Resolver for Vector2[], Vector3[], Vector4[], Quaternion[], Color[], Bounds[], Rect[]

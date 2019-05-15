@@ -1,11 +1,12 @@
 ﻿// ReSharper disable all
 
-using MessagePack.Formatters;
 using System;
 using System.Collections.Generic;
+using MessagePack;
+using MessagePack.Formatters;
 using UnityEngine;
 
-namespace MessagePack.Unity
+namespace UGF.MessagePack.Runtime.Resolvers.Unity
 {
     public class UnityResolver : IFormatterResolver
     {

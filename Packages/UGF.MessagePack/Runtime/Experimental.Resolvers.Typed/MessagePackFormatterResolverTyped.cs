@@ -3,7 +3,7 @@ using MessagePack;
 using MessagePack.Formatters;
 using UGF.Types.Runtime;
 
-namespace UGF.MessagePack.Runtime.Resolvers.Typed
+namespace UGF.MessagePack.Runtime.Experimental.Resolvers.Typed
 {
     public class MessagePackFormatterResolverTyped : IFormatterResolver
     {
@@ -21,16 +21,23 @@ namespace UGF.MessagePack.Runtime.Resolvers.Typed
 
         public IMessagePackFormatter<T> GetFormatter<T>()
         {
-            IMessagePackFormatter<T> formatter = FormatterCache<T>.Formatter;
+            Type type = typeof(T);
 
-            if (formatter == null)
+            if (type.IsInterface || type.IsAbstract)
             {
-                formatter = new MessagePackFormatterTypedGuid<T>(TypeProvider);
+                IMessagePackFormatter<T> formatter = FormatterCache<T>.Formatter;
 
-                FormatterCache<T>.Formatter = formatter;
+                if (formatter == null)
+                {
+                    formatter = new MessagePackFormatterTypedGuid<T>(TypeProvider);
+
+                    FormatterCache<T>.Formatter = formatter;
+                }
+
+                return formatter;
             }
 
-            return formatter;
+            return null;
         }
     }
 }

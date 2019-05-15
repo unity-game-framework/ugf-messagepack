@@ -1,14 +1,13 @@
 ﻿// ReSharper disable all
 
-using MessagePack.Formatters;
 using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
+using MessagePack;
+using MessagePack.Formatters;
 using UnityEngine;
 
-namespace MessagePack.Unity.Extension
+namespace UGF.MessagePack.Runtime.Resolvers.Unity.Extension
 {
     public static class ReservedUnityExtensionTypeCode
     {

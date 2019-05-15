@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using MessagePack;
 using MessagePack.Resolvers;
-using MessagePack.Unity;
-using MessagePack.Unity.Extension;
 using UGF.Assemblies.Runtime;
+using UGF.MessagePack.Runtime.Resolvers.Unity;
+using UGF.MessagePack.Runtime.Resolvers.Unity.Extension;
 using UGF.Types.Runtime;
 
 namespace UGF.MessagePack.Runtime

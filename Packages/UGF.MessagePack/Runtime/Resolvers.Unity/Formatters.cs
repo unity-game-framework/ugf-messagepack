@@ -1,11 +1,9 @@
 ﻿// ReSharper disable all
 
 using System;
-using System.Buffers;
 using MessagePack;
-using MessagePack.Formatters;
 
-namespace MessagePack.Unity
+namespace UGF.MessagePack.Runtime.Resolvers.Unity
 {
     public sealed class Vector2Formatter : global::MessagePack.Formatters.IMessagePackFormatter<global::UnityEngine.Vector2>
     {

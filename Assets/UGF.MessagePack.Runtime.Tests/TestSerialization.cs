@@ -100,7 +100,6 @@ namespace UGF.MessagePack.Runtime.Tests
             string text = m_serializer.SerializeToJson(target);
 
             Assert.NotNull(text);
-            Debug.Log(text);
         }
     }
 }

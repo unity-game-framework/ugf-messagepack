@@ -1,13 +1,16 @@
 using System;
+using System.Collections.Generic;
 using MessagePack;
 using MessagePack.Formatters;
 using UGF.Types.Runtime;
 
-namespace UGF.MessagePack.Runtime.Resolvers.Typed
+namespace UGF.MessagePack.Runtime.Experimental.Resolvers.Typed
 {
     public class MessagePackFormatterTypedGuid<T> : IMessagePackFormatter<T>
     {
         public ITypeProvider<Guid> TypeProvider { get; }
+
+        private readonly Dictionary<Type, IMessagePackFormatter<object>> m_cache = new Dictionary<Type, IMessagePackFormatter<object>>();
 
         public MessagePackFormatterTypedGuid(ITypeProvider<Guid> typeProvider)
         {
@@ -16,7 +19,7 @@ namespace UGF.MessagePack.Runtime.Resolvers.Typed
 
         public void Serialize(ref MessagePackWriter writer, T value, IFormatterResolver resolver)
         {
-            if (value == null)
+            if (EqualityComparer<T>.Default.Equals(value, default))
             {
                 writer.WriteNil();
             }
@@ -68,7 +71,15 @@ namespace UGF.MessagePack.Runtime.Resolvers.Typed
 
         private bool TryGetFormatter(Type type, IFormatterResolver resolver, out IMessagePackFormatter<object> formatter)
         {
-            formatter = resolver.GetFormatterDynamic(type) as IMessagePackFormatter<object>;
+            if (!m_cache.TryGetValue(type, out formatter))
+            {
+                formatter = resolver.GetFormatterDynamic(type) as IMessagePackFormatter<object>;
+
+                if (formatter != null)
+                {
+                    m_cache[type] = formatter;
+                }
+            }
 
             return formatter != null;
         }
