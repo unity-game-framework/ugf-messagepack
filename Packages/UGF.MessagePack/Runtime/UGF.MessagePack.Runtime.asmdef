@@ -1,13 +1,12 @@
 {
     "name": "UGF.MessagePack.Runtime",
     "references": [
-        "GUID:47c3349eaf0910446a6e557ee1a6748f",
-        "GUID:743b637636640324ab90d9cd72077f47"
+        "GUID:47c3349eaf0910446a6e557ee1a6748f"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
