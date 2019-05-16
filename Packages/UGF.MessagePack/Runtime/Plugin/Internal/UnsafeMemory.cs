@@ -1,6 +1,4 @@
-﻿#if NETSTANDARD
-
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace MessagePack.Internal
 {
@@ -502,7 +500,6 @@ namespace MessagePack.Internal
 
             return src.Length;
         }
-
     }
 
     public static partial class UnsafeMemory64
@@ -887,8 +884,5 @@ namespace MessagePack.Internal
 
             return src.Length;
         }
-
     }
 }
-
-#endif

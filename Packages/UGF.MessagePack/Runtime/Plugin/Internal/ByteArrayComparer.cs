@@ -6,10 +6,6 @@ namespace MessagePack.Internal
 {
     public static class ByteArrayComparer
     {
-#if ENABLE_UNSAFE_MSGPACK
-
-#if NETSTANDARD
-
         static readonly bool Is32Bit = (IntPtr.Size == 4);
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -25,19 +21,13 @@ namespace MessagePack.Internal
             }
         }
 
-#endif
-
-#if NETSTANDARD
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-#endif
         public static unsafe bool Equals(byte[] xs, int xsOffset, int xsCount, byte[] ys)
         {
             return Equals(xs, xsOffset, xsCount, ys, 0, ys.Length);
         }
 
-#if NETSTANDARD
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-#endif
         public static unsafe bool Equals(byte[] xs, int xsOffset, int xsCount, byte[] ys, int ysOffset, int ysCount)
         {
             if (xs == null || ys == null || xsCount != ysCount)
@@ -95,45 +85,6 @@ namespace MessagePack.Internal
                 }
             }
         }
-
-#else
-#if NETSTANDARD
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-#endif
-        public static bool Equals(byte[] xs, int xsOffset, int xsCount, byte[] ys)
-        {
-            if (xs == null || ys == null || xsCount != ys.Length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < ys.Length; i++)
-            {
-                if (xs[xsOffset++] != ys[i]) return false;
-            }
-
-            return true;
-        }
-
-#if NETSTANDARD
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-#endif
-        public static bool Equals(byte[] xs, int xsOffset, int xsCount, byte[] ys, int ysOffset, int ysCount)
-        {
-            if (xs == null || ys == null || xsCount != ysCount)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < xsCount; i++)
-            {
-                if (xs[xsOffset++] != ys[ysOffset++]) return false;
-            }
-
-            return true;
-        }
-
-#endif
 
     }
 }

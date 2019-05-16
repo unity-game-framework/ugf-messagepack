@@ -1,12 +1,8 @@
-﻿#if NETSTANDARD
-
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 
 namespace MessagePack.Internal
 {
-    // for string key property name write optimization.
-
     public static class UnsafeMemory
     {
         public static readonly bool Is32Bit = (IntPtr.Size == 4);
@@ -163,5 +159,3 @@ namespace MessagePack.Internal
         }
     }
 }
-
-#endif

@@ -19,7 +19,6 @@ namespace MessagePack.Internal
             root = new AutomataNode(0);
         }
 
-#if NETSTANDARD
         public unsafe void Add(string str, int value)
         {
             var bytes = Encoding.UTF8.GetBytes(str);
@@ -70,33 +69,6 @@ namespace MessagePack.Internal
                 }
             }
         }
-#else
-        // for Unity, use safe only.
-
-        public void Add(string str, int value)
-        {
-            var bytes = Encoding.UTF8.GetBytes(str);
-            var offset = 0;
-
-            var node = root;
-
-            var rest = bytes.Length;
-            while (rest != 0)
-            {
-                var key = AutomataKeyGen.GetKeySafe(bytes, ref offset, ref rest);
-
-                if (rest == 0)
-                {
-                    node = node.Add(key, value, str);
-                }
-                else
-                {
-                    node = node.Add(key);
-                }
-            }
-        }
-
-#endif
 
 
         public bool TryGetValueSafe(ArraySegment<byte> key, out int value)
@@ -239,7 +211,6 @@ namespace MessagePack.Internal
                 return v;
             }
 
-#if NETSTANDARD
 
             public unsafe AutomataNode SearchNext(ref byte* p, ref int rest)
             {
@@ -267,8 +238,6 @@ namespace MessagePack.Internal
 
                 return null;
             }
-
-#endif
 
             public AutomataNode SearchNextSafe(byte[] p, ref int offset, ref int rest)
             {
@@ -468,9 +437,7 @@ namespace MessagePack.Internal
     {
         public delegate ulong PointerDelegate<T>(ref T p, ref int rest);
 
-#if NETSTANDARD
         public static readonly MethodInfo GetKeyMethod = typeof(AutomataKeyGen).GetRuntimeMethod("GetKey", new[] { typeof(byte).MakePointerType().MakeByRefType(), typeof(int).MakeByRefType() });
-#endif
 
 #if !NETSTANDARD
 
@@ -496,8 +463,8 @@ namespace MessagePack.Internal
                         var il = dm.GetILGenerator();
 
                         il.DeclareLocal(typeof(int)); // var readSize
-                        il.DeclareLocal(typeof(ulong)); // var key = 
-                        il.DeclareLocal(typeof(int)); // var _local = 
+                        il.DeclareLocal(typeof(ulong)); // var key =
+                        il.DeclareLocal(typeof(int)); // var _local =
 
                         var elseLabel = il.DefineLabel();
                         var endLabel = il.DefineLabel();
@@ -686,7 +653,7 @@ namespace MessagePack.Internal
                     }
                 }
             }
-            
+
             return dynamicGetKeyMethod;
         }
 
@@ -694,7 +661,6 @@ namespace MessagePack.Internal
 
 #endif
 
-#if NETSTANDARD
 
         public static unsafe ulong GetKey(ref byte* p, ref int rest)
         {
@@ -774,7 +740,6 @@ namespace MessagePack.Internal
             }
         }
 
-#endif
 
         public static ulong GetKeySafe(byte[] bytes, ref int offset, ref int rest)
         {
