@@ -8,7 +8,7 @@ namespace UGF.MessagePack.Runtime
         public byte[] Buffer;
         public int Position;
 
-        public MessagePackWriter(byte[] buffer, int position)
+        public MessagePackWriter(byte[] buffer = null, int position = 0)
         {
             Buffer = buffer;
             Position = position;

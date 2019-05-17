@@ -8,7 +8,7 @@ namespace UGF.MessagePack.Runtime
         void Remove(IMessagePackFormatter formatter);
         IMessagePackFormatter<T> Get<T>();
         IMessagePackFormatter Get(Type type);
-        IMessagePackFormatter<T> GetOrCreate<T>(Func<IMessagePackFormatter> func);
-        IMessagePackFormatter GetOrCreate(Type type, Func<IMessagePackFormatter> func);
+        IMessagePackFormatter<T> GetOrCreate<T>(MessagePackFormatterCreateHandler handler);
+        IMessagePackFormatter GetOrCreate(Type type, MessagePackFormatterCreateHandler handler);
     }
 }

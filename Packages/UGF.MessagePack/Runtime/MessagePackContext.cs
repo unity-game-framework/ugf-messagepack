@@ -7,6 +7,8 @@ namespace UGF.MessagePack.Runtime
     {
         public Dictionary<Type, object> Values { get; } = new Dictionary<Type, object>();
 
+        public static IMessagePackContext Empty { get; } = new MessagePackContext();
+
         public T Get<T>()
         {
             return (T)Values[typeof(T)];
@@ -14,6 +16,8 @@ namespace UGF.MessagePack.Runtime
 
         public object Get(Type type)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
             return Values[type];
         }
 
@@ -31,6 +35,8 @@ namespace UGF.MessagePack.Runtime
 
         public bool TryGet(Type type, out object value)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
             return Values.TryGetValue(type, out value);
         }
     }

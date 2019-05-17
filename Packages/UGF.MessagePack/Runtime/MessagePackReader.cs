@@ -5,12 +5,12 @@ namespace UGF.MessagePack.Runtime
 {
     public struct MessagePackReader
     {
-        public byte[] Buffer;
+        public readonly byte[] Buffer;
         public int Position;
 
         public MessagePackReader(byte[] buffer, int position = 0)
         {
-            Buffer = buffer;
+            Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             Position = position;
         }
 
@@ -202,6 +202,11 @@ namespace UGF.MessagePack.Runtime
             Position += readSize;
 
             return value;
+        }
+
+        public MessagePackReader GetReader(int positionOffset = 0)
+        {
+            return new MessagePackReader(Buffer, Position + positionOffset);
         }
     }
 }

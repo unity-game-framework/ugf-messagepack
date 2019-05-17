@@ -9,11 +9,15 @@ namespace UGF.MessagePack.Runtime
 
         public void Add(IMessagePackFormatter formatter)
         {
+            if (formatter == null) throw new ArgumentNullException(nameof(formatter));
+
             Formatters.Add(formatter.TargetType, formatter);
         }
 
         public void Remove(IMessagePackFormatter formatter)
         {
+            if (formatter == null) throw new ArgumentNullException(nameof(formatter));
+
             Formatters.Remove(formatter.TargetType);
         }
 
@@ -24,19 +28,24 @@ namespace UGF.MessagePack.Runtime
 
         public virtual IMessagePackFormatter Get(Type type)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
             return Formatters[type];
         }
 
-        public virtual IMessagePackFormatter<T> GetOrCreate<T>(Func<IMessagePackFormatter> func)
+        public virtual IMessagePackFormatter<T> GetOrCreate<T>(MessagePackFormatterCreateHandler handler)
         {
-            return (IMessagePackFormatter<T>)GetOrCreate(typeof(T), func);
+            return (IMessagePackFormatter<T>)GetOrCreate(typeof(T), handler);
         }
 
-        public virtual IMessagePackFormatter GetOrCreate(Type type, Func<IMessagePackFormatter> func)
+        public virtual IMessagePackFormatter GetOrCreate(Type type, MessagePackFormatterCreateHandler handler)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+
             if (!Formatters.TryGetValue(type, out IMessagePackFormatter formatter))
             {
-                formatter = func();
+                formatter = handler();
 
                 Add(formatter);
             }

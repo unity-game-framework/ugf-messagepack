@@ -2,21 +2,48 @@ using System;
 
 namespace UGF.MessagePack.Runtime
 {
-    public abstract class MessagePackFormatter<T> : IMessagePackFormatter<T>
+    public abstract class MessagePackFormatter<T> : IMessagePackFormatter<T>, IMessagePackFormatter
     {
+        public IMessagePackProvider Provider { get; }
         public Type TargetType { get; } = typeof(T);
 
-        public abstract void Serialize(ref MessagePackWriter writer, T value, IMessagePackProvider provider, IMessagePackContext context);
-        public abstract T Deserialize(ref MessagePackReader reader, IMessagePackProvider provider, IMessagePackContext context);
-
-        void IMessagePackFormatter.Serialize(ref MessagePackWriter writer, object value, IMessagePackProvider provider, IMessagePackContext context)
+        protected MessagePackFormatter(IMessagePackProvider provider)
         {
-            Serialize(ref writer, (T)value, provider, context);
+            Provider = provider;
         }
 
-        object IMessagePackFormatter.Deserialize(ref MessagePackReader reader, IMessagePackProvider provider, IMessagePackContext context)
+        public void Serialize(ref MessagePackWriter writer, T value)
         {
-            return Deserialize(ref reader, provider, context);
+            Serialize(ref writer, value, MessagePackContext.Empty);
+        }
+
+        public abstract void Serialize(ref MessagePackWriter writer, T value, IMessagePackContext context);
+
+        public T Deserialize(ref MessagePackReader reader)
+        {
+            return Deserialize(ref reader, MessagePackContext.Empty);
+        }
+
+        public abstract T Deserialize(ref MessagePackReader reader, IMessagePackContext context);
+
+        void IMessagePackFormatter.Serialize(ref MessagePackWriter writer, object value)
+        {
+            Serialize(ref writer, (T)value, MessagePackContext.Empty);
+        }
+
+        void IMessagePackFormatter.Serialize(ref MessagePackWriter writer, object value, IMessagePackContext context)
+        {
+            Serialize(ref writer, (T)value, context);
+        }
+
+        object IMessagePackFormatter.Deserialize(ref MessagePackReader reader)
+        {
+            return Deserialize(ref reader, MessagePackContext.Empty);
+        }
+
+        object IMessagePackFormatter.Deserialize(ref MessagePackReader reader, IMessagePackContext context)
+        {
+            return Deserialize(ref reader, context);
         }
     }
 }

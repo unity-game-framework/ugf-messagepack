@@ -1,8 +1,10 @@
 namespace UGF.MessagePack.Runtime
 {
-    public interface IMessagePackFormatter<T> : IMessagePackFormatter
+    public interface IMessagePackFormatter<T>
     {
-        void Serialize(ref MessagePackWriter writer, T value, IMessagePackProvider provider, IMessagePackContext context);
-        new T Deserialize(ref MessagePackReader reader, IMessagePackProvider provider, IMessagePackContext context);
+        void Serialize(ref MessagePackWriter writer, T value);
+        void Serialize(ref MessagePackWriter writer, T value, IMessagePackContext context);
+        T Deserialize(ref MessagePackReader reader);
+        T Deserialize(ref MessagePackReader reader, IMessagePackContext context);
     }
 }
