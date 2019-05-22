@@ -556,6 +556,17 @@
             return buffer is from memory pool, be careful to use. 
             </summary>
         </member>
+        <member name="T:MessagePack.MessagePackUnsafeUtility">
+            <summary>
+            Provides unsafe utilities.
+            </summary>
+        </member>
+        <member name="M:MessagePack.MessagePackUnsafeUtility.As``2(``0@)">
+            <summary>
+            Reinterprets the given reference as a reference to a value of type <typeparamref name="TTo">TTo</typeparamref>.
+            </summary>
+            <param name="from">The reference to reinterpret.</param>
+        </member>
         <member name="T:MessagePack.Resolvers.AttributeFormatterResolver">
             <summary>
             Get formatter from [MessaegPackFromatter] attribute.
