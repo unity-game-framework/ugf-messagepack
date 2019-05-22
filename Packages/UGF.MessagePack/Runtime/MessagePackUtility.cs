@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using MessagePack.Resolvers;
 using UGF.Assemblies.Runtime;
+using UGF.MessagePack.Runtime.Formatters.Enums;
 using UGF.Types.Runtime;
 
 namespace UGF.MessagePack.Runtime
@@ -20,6 +21,7 @@ namespace UGF.MessagePack.Runtime
 
             provider.Providers.Sort(MessagePackProviderByAttributeComparer.Default);
 
+            provider.Providers.Add(new EnumProvider(context));
             provider.Providers.Add(new MessagePackProviderWrapper(context, BuiltinResolver.Instance));
 
             return provider;
