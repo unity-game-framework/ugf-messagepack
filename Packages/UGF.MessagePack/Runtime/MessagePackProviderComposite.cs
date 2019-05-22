@@ -26,22 +26,5 @@ namespace UGF.MessagePack.Runtime
 
             return formatter;
         }
-
-        public override IMessagePackFormatter GetOrCreate(Type type, MessagePackFormatterCreateHandler handler)
-        {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-
-            IMessagePackFormatter formatter = Get(type);
-
-            if (formatter == null)
-            {
-                formatter = handler();
-
-                Add(formatter);
-            }
-
-            return formatter;
-        }
     }
 }

@@ -5,7 +5,7 @@ namespace UGF.MessagePack.Runtime
 {
     public struct MessagePackReader
     {
-        public readonly byte[] Buffer;
+        public byte[] Buffer;
         public int Position;
 
         public MessagePackReader(byte[] buffer, int position = 0)

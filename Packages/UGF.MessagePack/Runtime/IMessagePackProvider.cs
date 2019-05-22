@@ -4,11 +4,7 @@ namespace UGF.MessagePack.Runtime
 {
     public interface IMessagePackProvider
     {
-        void Add(IMessagePackFormatter formatter);
-        void Remove(IMessagePackFormatter formatter);
         IMessagePackFormatter<T> Get<T>();
         IMessagePackFormatter Get(Type type);
-        IMessagePackFormatter<T> GetOrCreate<T>(MessagePackFormatterCreateHandler handler);
-        IMessagePackFormatter GetOrCreate(Type type, MessagePackFormatterCreateHandler handler);
     }
 }

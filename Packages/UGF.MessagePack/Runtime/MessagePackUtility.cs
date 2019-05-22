@@ -8,11 +8,13 @@ namespace UGF.MessagePack.Runtime
 {
     public static class MessagePackUtility
     {
-        public static IMessagePackProvider CreateProvider(Assembly assembly = null)
+        public static IMessagePackProvider CreateProvider(IMessagePackContext context, Assembly assembly = null)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             var provider = new MessagePackProviderComposite();
 
-            GetFormatters(provider, provider.Formatters, assembly);
+            GetFormatters(provider, context, provider.Formatters, assembly);
             GetProviders(provider.Providers, assembly);
 
             provider.Providers.Sort(MessagePackProviderByAttributeComparer.Default);
@@ -20,14 +22,18 @@ namespace UGF.MessagePack.Runtime
             return provider;
         }
 
-        public static void GetFormatters(IMessagePackProvider provider, IDictionary<Type, IMessagePackFormatter> formatters, Assembly assembly = null)
+        public static void GetFormatters(IMessagePackProvider provider, IMessagePackContext context, IDictionary<Type, IMessagePackFormatter> formatters, Assembly assembly = null)
         {
             if (provider == null) throw new ArgumentNullException(nameof(provider));
+            if (context == null) throw new ArgumentNullException(nameof(context));
             if (formatters == null) throw new ArgumentNullException(nameof(formatters));
 
             foreach (Type type in AssemblyUtility.GetBrowsableTypes<MessagePackFormatterAttribute>(assembly))
             {
-                throw new NotImplementedException();
+                if (TypesUtility.TryCreateType(type, new object[] { provider, context }, out IMessagePackFormatter formatter))
+                {
+                    formatters.Add(type, formatter);
+                }
             }
         }
 
