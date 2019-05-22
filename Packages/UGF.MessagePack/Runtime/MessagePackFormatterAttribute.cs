@@ -7,11 +7,16 @@ namespace UGF.MessagePack.Runtime
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class MessagePackFormatterAttribute : Attribute
     {
-        public MessagePackFormatterType Type { get; }
+        public int Type { get; }
+
+        public MessagePackFormatterAttribute(int type)
+        {
+            Type = type;
+        }
 
         public MessagePackFormatterAttribute(MessagePackFormatterType type)
         {
-            Type = type;
+            Type = (int)type;
         }
     }
 }

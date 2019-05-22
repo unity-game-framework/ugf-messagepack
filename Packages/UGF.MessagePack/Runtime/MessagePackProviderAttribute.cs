@@ -8,12 +8,18 @@ namespace UGF.MessagePack.Runtime
     public sealed class MessagePackProviderAttribute : Attribute
     {
         public int Priority { get; }
-        public MessagePackFormatterType Type { get; }
+        public int Type { get; }
+
+        public MessagePackProviderAttribute(int priority, int type)
+        {
+            Priority = priority;
+            Type = type;
+        }
 
         public MessagePackProviderAttribute(int priority, MessagePackFormatterType type)
         {
             Priority = priority;
-            Type = type;
+            Type = (int)type;
         }
     }
 }

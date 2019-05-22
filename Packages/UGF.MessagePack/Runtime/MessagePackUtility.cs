@@ -35,7 +35,7 @@ namespace UGF.MessagePack.Runtime
             {
                 var attribute = type.GetCustomAttribute<MessagePackFormatterAttribute>(false);
 
-                if (attribute.Type == formatterType && TypesUtility.TryCreateType(type, new object[] { provider, context }, out IMessagePackFormatter formatter))
+                if (attribute.Type == (int)formatterType && TypesUtility.TryCreateType(type, new object[] { provider, context }, out IMessagePackFormatter formatter))
                 {
                     formatters.Add(type, formatter);
                 }
@@ -50,7 +50,7 @@ namespace UGF.MessagePack.Runtime
             {
                 var attribute = type.GetCustomAttribute<MessagePackProviderAttribute>(false);
 
-                if (attribute.Type == formatterType && TypesUtility.TryCreateType(type, out IMessagePackProvider provider))
+                if (attribute.Type == (int)formatterType && TypesUtility.TryCreateType(type, out IMessagePackProvider provider))
                 {
                     providers.Add(provider);
                 }

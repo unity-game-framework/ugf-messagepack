@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using MessagePack;
 
 namespace UGF.MessagePack.Runtime
@@ -12,6 +13,11 @@ namespace UGF.MessagePack.Runtime
         {
             Buffer = buffer;
             Position = position;
+        }
+
+        public MessagePackWriter GetWrite(int positionOffset = 0)
+        {
+            return new MessagePackWriter(Buffer, Position + positionOffset);
         }
 
         public void WriteNil()
@@ -87,6 +93,11 @@ namespace UGF.MessagePack.Runtime
         public void WriteStringBytes(byte[] value)
         {
             Position += MessagePackBinary.WriteStringBytes(ref Buffer, Position, value);
+        }
+
+        public void WriteStringUnsafe(string value)
+        {
+            Position += MessagePackBinary.WriteStringUnsafe(ref Buffer, Position, value, Encoding.UTF8.GetByteCount(value));
         }
 
         public void WriteStringUnsafe(string value, int byteCount)

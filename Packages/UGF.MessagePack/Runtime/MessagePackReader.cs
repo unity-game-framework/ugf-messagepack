@@ -14,6 +14,11 @@ namespace UGF.MessagePack.Runtime
             Position = position;
         }
 
+        public MessagePackReader GetReader(int positionOffset = 0)
+        {
+            return new MessagePackReader(Buffer, Position + positionOffset);
+        }
+
         public void ReadNext()
         {
             Position += MessagePackBinary.ReadNext(Buffer, Position);
@@ -22,6 +27,18 @@ namespace UGF.MessagePack.Runtime
         public void ReadNextBlock()
         {
             Position += MessagePackBinary.ReadNextBlock(Buffer, Position);
+        }
+
+        public bool TryReadNil()
+        {
+            bool value = MessagePackBinary.IsNil(Buffer, Position);
+
+            if (value)
+            {
+                Position++;
+            }
+
+            return value;
         }
 
         public Nil ReadNil()
@@ -184,29 +201,6 @@ namespace UGF.MessagePack.Runtime
             Position += readSize;
 
             return value;
-        }
-
-        public int ReadArrayHeader()
-        {
-            int value = MessagePackBinary.ReadArrayHeader(Buffer, Position, out int readSize);
-
-            Position += readSize;
-
-            return value;
-        }
-
-        public int ReadMapHeader()
-        {
-            int value = MessagePackBinary.ReadMapHeader(Buffer, Position, out int readSize);
-
-            Position += readSize;
-
-            return value;
-        }
-
-        public MessagePackReader GetReader(int positionOffset = 0)
-        {
-            return new MessagePackReader(Buffer, Position + positionOffset);
         }
     }
 }
