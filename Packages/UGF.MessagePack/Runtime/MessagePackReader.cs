@@ -10,6 +10,8 @@ namespace UGF.MessagePack.Runtime
 
         public MessagePackReader(byte[] buffer, int position = 0)
         {
+            if (position < 0) throw new ArgumentException("Position can not be less than zero.");
+
             Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             Position = position;
         }
