@@ -4,7 +4,7 @@ namespace UGF.MessagePack.Runtime
 {
     public interface IMessagePackProvider
     {
-        IMessagePackFormatter<T> Get<T>();
-        IMessagePackFormatter Get(Type type);
+        bool TryGet<T>(out IMessagePackFormatter<T> formatter);
+        bool TryGet(Type type, out IMessagePackFormatter formatter);
     }
 }

@@ -7,24 +7,36 @@ namespace UGF.MessagePack.Runtime
     {
         public List<IMessagePackProvider> Providers { get; } = new List<IMessagePackProvider>();
 
-        public override IMessagePackFormatter Get(Type type)
+        public override bool TryGet<T>(out IMessagePackFormatter<T> formatter)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
-            if (!Formatters.TryGetValue(type, out IMessagePackFormatter formatter))
+            if (!base.TryGet(out formatter))
             {
                 for (int i = 0; i < Providers.Count; i++)
                 {
-                    formatter = Providers[i].Get(type);
-
-                    if (formatter != null)
+                    if (Providers[i].TryGet(out formatter))
                     {
-                        return formatter;
+                        return true;
                     }
                 }
             }
 
-            return formatter;
+            return formatter != null;
+        }
+
+        public override bool TryGet(Type type, out IMessagePackFormatter formatter)
+        {
+            if (!base.TryGet(type, out formatter))
+            {
+                for (int i = 0; i < Providers.Count; i++)
+                {
+                    if (Providers[i].TryGet(type, out formatter))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return formatter != null;
         }
     }
 }

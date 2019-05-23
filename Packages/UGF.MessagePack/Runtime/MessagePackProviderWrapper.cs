@@ -14,11 +14,9 @@ namespace UGF.MessagePack.Runtime
             Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
         }
 
-        public override IMessagePackFormatter<T> Get<T>()
+        public override bool TryGet<T>(out IMessagePackFormatter<T> formatter)
         {
-            IMessagePackFormatter<T> formatter = base.Get<T>();
-
-            if (formatter == null)
+            if (!base.TryGet(out formatter))
             {
                 global::MessagePack.Formatters.IMessagePackFormatter<T> formatterInner = Resolver.GetFormatter<T>();
 
@@ -27,10 +25,22 @@ namespace UGF.MessagePack.Runtime
                     formatter = new MessagePackFormatterWrapper<T>(this, Context, formatterInner, Resolver);
 
                     Formatters.Add(typeof(T), formatter);
+
+                    return true;
                 }
             }
 
-            return formatter;
+            return formatter != null;
+        }
+
+        public override bool TryGet(Type type, out IMessagePackFormatter formatter)
+        {
+            if (!base.TryGet(type, out formatter))
+            {
+                throw new NotSupportedException($"Generate formatter wrapper in non-generic way not supported: '{type}'.");
+            }
+
+            return formatter != null;
         }
     }
 }

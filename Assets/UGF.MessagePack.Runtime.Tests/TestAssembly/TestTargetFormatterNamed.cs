@@ -29,7 +29,7 @@ namespace UGF.MessagePack.Runtime.Tests.TestAssembly
 
         public TestTargetFormatterNamed(IMessagePackProvider provider, IMessagePackContext context) : base(provider, context)
         {
-            m_formatterTypeCode = provider.Get<TypeCode>() ?? throw new ArgumentException($"The formatter for the specified type not found: '{typeof(TypeCode)}'.");
+            if (!provider.TryGet(out m_formatterTypeCode)) throw new ArgumentException($"The formatter for the specified type not found: '{typeof(TypeCode)}'.");
         }
 
         public override void Serialize(ref MessagePackWriter writer, TestTarget value)

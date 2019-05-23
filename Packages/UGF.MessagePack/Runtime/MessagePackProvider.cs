@@ -7,16 +7,23 @@ namespace UGF.MessagePack.Runtime
     {
         public Dictionary<Type, IMessagePackFormatter> Formatters { get; } = new Dictionary<Type, IMessagePackFormatter>();
 
-        public virtual IMessagePackFormatter<T> Get<T>()
+        public virtual bool TryGet<T>(out IMessagePackFormatter<T> formatter)
         {
-            return (IMessagePackFormatter<T>)Get(typeof(T));
+            if (Formatters.TryGetValue(typeof(T), out IMessagePackFormatter formatterBase) && formatterBase is IMessagePackFormatter<T> formatterGeneric)
+            {
+                formatter = formatterGeneric;
+                return true;
+            }
+
+            formatter = null;
+            return false;
         }
 
-        public virtual IMessagePackFormatter Get(Type type)
+        public virtual bool TryGet(Type type, out IMessagePackFormatter formatter)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            return Formatters[type];
+            return Formatters.TryGetValue(type, out formatter);
         }
     }
 }

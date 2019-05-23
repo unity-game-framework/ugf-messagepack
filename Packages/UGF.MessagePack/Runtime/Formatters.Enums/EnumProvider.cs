@@ -11,15 +11,13 @@ namespace UGF.MessagePack.Runtime.Formatters.Enums
             Context = context;
         }
 
-        public override IMessagePackFormatter<T> Get<T>()
+        public override bool TryGet<T>(out IMessagePackFormatter<T> formatter)
         {
             Type type = typeof(T);
 
             if (type.IsEnum)
             {
-                IMessagePackFormatter<T> formatter = base.Get<T>();
-
-                if (formatter == null)
+                if (!base.TryGet(out formatter))
                 {
                     Type underlyingType = type.GetEnumUnderlyingType();
                     TypeCode typeCode = Type.GetTypeCode(underlyingType);
@@ -72,10 +70,78 @@ namespace UGF.MessagePack.Runtime.Formatters.Enums
                     Formatters.Add(type, formatter);
                 }
 
-                return formatter;
+                return true;
             }
 
-            return null;
+            formatter = null;
+            return false;
+        }
+
+        public override bool TryGet(Type type, out IMessagePackFormatter formatter)
+        {
+            if (type.IsEnum)
+            {
+                if (!base.TryGet(type, out formatter))
+                {
+                    Type underlyingType = type.GetEnumUnderlyingType();
+                    TypeCode typeCode = Type.GetTypeCode(underlyingType);
+                    Type formatterType;
+
+                    switch (typeCode)
+                    {
+                        case TypeCode.Byte:
+                        {
+                            formatterType = typeof(EnumFormatterByte<>).MakeGenericType(type);
+                            break;
+                        }
+                        case TypeCode.Int16:
+                        {
+                            formatterType = typeof(EnumFormatterInt16<>).MakeGenericType(type);
+                            break;
+                        }
+                        case TypeCode.Int32:
+                        {
+                            formatterType = typeof(EnumFormatterInt32<>).MakeGenericType(type);
+                            break;
+                        }
+                        case TypeCode.Int64:
+                        {
+                            formatterType = typeof(EnumFormatterInt64<>).MakeGenericType(type);
+                            break;
+                        }
+                        case TypeCode.SByte:
+                        {
+                            formatterType = typeof(EnumFormatterSByte<>).MakeGenericType(type);
+                            break;
+                        }
+                        case TypeCode.UInt16:
+                        {
+                            formatterType = typeof(EnumFormatterUInt16<>).MakeGenericType(type);
+                            break;
+                        }
+                        case TypeCode.UInt32:
+                        {
+                            formatterType = typeof(EnumFormatterUInt32<>).MakeGenericType(type);
+                            break;
+                        }
+                        case TypeCode.UInt64:
+                        {
+                            formatterType = typeof(EnumFormatterUInt64<>).MakeGenericType(type);
+                            break;
+                        }
+                        default: throw new ArgumentOutOfRangeException(nameof(type), $"The specified enum underlying type not supported: '{underlyingType}.'");
+                    }
+
+                    formatter = (IMessagePackFormatter)Activator.CreateInstance(formatterType, this, Context);
+
+                    Formatters.Add(type, formatter);
+                }
+
+                return true;
+            }
+
+            formatter = null;
+            return false;
         }
     }
 }
