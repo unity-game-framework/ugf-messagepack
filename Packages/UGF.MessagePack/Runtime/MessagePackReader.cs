@@ -206,13 +206,17 @@ namespace UGF.MessagePack.Runtime
             return value;
         }
 
-        public string Print(StringBuilder builder = null)
+        public string Print()
         {
-            if (builder == null)
-            {
-                builder = new StringBuilder();
-            }
+            var builder = new StringBuilder();
 
+            Print(builder);
+
+            return builder.ToString();
+        }
+
+        public void Print(StringBuilder builder)
+        {
             builder.Append('[');
 
             for (int i = 0; i < Position; i++)
@@ -226,8 +230,6 @@ namespace UGF.MessagePack.Runtime
             }
 
             builder.Append(']');
-
-            return builder.ToString();
         }
     }
 }
