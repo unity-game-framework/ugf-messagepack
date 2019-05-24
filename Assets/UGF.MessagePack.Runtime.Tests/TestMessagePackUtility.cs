@@ -47,6 +47,11 @@ namespace UGF.MessagePack.Runtime.Tests
             MessagePackUtility.GetFormatters(provider, MessagePackContext.Empty, formatters, -1);
 
             Assert.AreEqual(1, formatters.Count);
+
+            bool result = formatters.TryGetValue(typeof(bool), out IMessagePackFormatter formatter);
+
+            Assert.True(result);
+            Assert.NotNull(formatter);
         }
 
         [Test]

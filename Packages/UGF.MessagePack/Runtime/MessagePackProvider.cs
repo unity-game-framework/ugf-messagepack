@@ -9,7 +9,7 @@ namespace UGF.MessagePack.Runtime
 
         public void Add<T>(IMessagePackFormatter<T> formatter)
         {
-            Formatters.Add(typeof(T), formatter);
+            Formatters.Add(formatter.TargetType, formatter);
         }
 
         public void Remove<T>()

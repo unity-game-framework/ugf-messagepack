@@ -49,7 +49,7 @@ namespace UGF.MessagePack.Runtime
 
                 if (attribute.Type == formatterType && TypesUtility.TryCreateType(type, new object[] { provider, context }, out IMessagePackFormatter formatter))
                 {
-                    formatters.Add(type, formatter);
+                    formatters.Add(formatter.TargetType, formatter);
                 }
             }
         }
