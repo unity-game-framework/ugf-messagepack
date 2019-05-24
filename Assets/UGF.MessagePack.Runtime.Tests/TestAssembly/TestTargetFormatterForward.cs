@@ -5,11 +5,17 @@ namespace UGF.MessagePack.Runtime.Tests.TestAssembly
     [MessagePackFormatter(MessagePackFormatterType.Forward)]
     public sealed class TestTargetFormatterForward : MessagePackFormatterBase<TestTarget>
     {
-        private readonly IMessagePackFormatter<TypeCode> m_formatterTypeCode;
+        private IMessagePackFormatter<TypeCode> m_formatterTypeCode;
 
         public TestTargetFormatterForward(IMessagePackProvider provider, IMessagePackContext context) : base(provider, context)
         {
-            if (!provider.TryGet(out m_formatterTypeCode)) throw new ArgumentException($"The formatter for the specified type not found: '{typeof(TypeCode)}'.");
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            if (!Provider.TryGet(out m_formatterTypeCode)) throw new ArgumentException($"The formatter for the specified type not found: '{typeof(TypeCode)}'.");
         }
 
         public override void Serialize(ref MessagePackWriter writer, TestTarget value)

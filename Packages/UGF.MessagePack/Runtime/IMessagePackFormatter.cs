@@ -8,6 +8,7 @@ namespace UGF.MessagePack.Runtime
         IMessagePackContext Context { get; }
         Type TargetType { get; }
 
+        void Initialize();
         void Serialize(ref MessagePackWriter writer, object value);
         object Deserialize(ref MessagePackReader reader);
     }

@@ -14,6 +14,10 @@ namespace UGF.MessagePack.Runtime
             Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        public virtual void Initialize()
+        {
+        }
+
         public abstract void Serialize(ref MessagePackWriter writer, T value);
         public abstract T Deserialize(ref MessagePackReader reader);
 

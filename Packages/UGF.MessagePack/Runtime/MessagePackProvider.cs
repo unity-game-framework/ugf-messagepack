@@ -7,6 +7,14 @@ namespace UGF.MessagePack.Runtime
     {
         public Dictionary<Type, IMessagePackFormatter> Formatters { get; } = new Dictionary<Type, IMessagePackFormatter>();
 
+        public void Initialize()
+        {
+            foreach (KeyValuePair<Type, IMessagePackFormatter> pair in Formatters)
+            {
+                pair.Value.Initialize();
+            }
+        }
+
         public void Add<T>(IMessagePackFormatter<T> formatter)
         {
             Formatters.Add(formatter.TargetType, formatter);

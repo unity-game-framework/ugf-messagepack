@@ -7,8 +7,6 @@ namespace UGF.MessagePack.Runtime.Tests.TestAssembly
     [MessagePackFormatter(MessagePackFormatterType.Named)]
     public class TestTargetFormatterNamed : MessagePackFormatterBase<TestTarget>
     {
-        private readonly IMessagePackFormatter<TypeCode> m_formatterTypeCode;
-
         private readonly AutomataDictionary m_nameToKey = new AutomataDictionary
         {
             { "BoolValue", 0 },
@@ -27,9 +25,17 @@ namespace UGF.MessagePack.Runtime.Tests.TestAssembly
             MessagePackBinary.GetEncodedStringBytes("EnumValue"),
         };
 
+        private IMessagePackFormatter<TypeCode> m_formatterTypeCode;
+
         public TestTargetFormatterNamed(IMessagePackProvider provider, IMessagePackContext context) : base(provider, context)
         {
-            if (!provider.TryGet(out m_formatterTypeCode)) throw new ArgumentException($"The formatter for the specified type not found: '{typeof(TypeCode)}'.");
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            if (!Provider.TryGet(out m_formatterTypeCode)) throw new ArgumentException($"The formatter for the specified type not found: '{typeof(TypeCode)}'.");
         }
 
         public override void Serialize(ref MessagePackWriter writer, TestTarget value)
