@@ -2,8 +2,7 @@
     "name": "UGF.MessagePack.Runtime.Tests",
     "references": [
         "GUID:47c3349eaf0910446a6e557ee1a6748f",
-        "GUID:94f0c128ac2728f4d8370979a4d2bc47",
-        "GUID:743b637636640324ab90d9cd72077f47"
+        "GUID:94f0c128ac2728f4d8370979a4d2bc47"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

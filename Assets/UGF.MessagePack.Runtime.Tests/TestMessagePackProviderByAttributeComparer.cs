@@ -5,17 +5,17 @@ namespace UGF.MessagePack.Runtime.Tests
 {
     public class TestMessagePackProviderByAttributeComparer
     {
-        [MessagePackProvider(0, MessagePackFormatterType.Unknown)]
+        [MessagePackProvider]
         private class Provider0 : MessagePackProvider
         {
         }
 
-        [MessagePackProvider(5, MessagePackFormatterType.Unknown)]
+        [MessagePackProvider(5)]
         private class Provider1 : MessagePackProvider
         {
         }
 
-        [MessagePackProvider(-5, MessagePackFormatterType.Unknown)]
+        [MessagePackProvider(-5)]
         private class Provider2 : MessagePackProvider
         {
         }

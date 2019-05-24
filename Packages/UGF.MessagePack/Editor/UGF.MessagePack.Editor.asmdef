@@ -1,10 +1,7 @@
 {
     "name": "UGF.MessagePack.Editor",
     "references": [
-        "GUID:94f0c128ac2728f4d8370979a4d2bc47",
-        "GUID:37d43482ba9b4804cab3b97251fc8943",
-        "GUID:3261026f398ac504fa7bfd69a915d0d0",
-        "GUID:3686f1ecbde070e4dbd247e1291c142f"
+        "GUID:94f0c128ac2728f4d8370979a4d2bc47"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

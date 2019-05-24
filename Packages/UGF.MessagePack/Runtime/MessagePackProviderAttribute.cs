@@ -10,7 +10,7 @@ namespace UGF.MessagePack.Runtime
         public int Order { get; }
         public int Type { get; }
 
-        public MessagePackProviderAttribute(int order, int type)
+        public MessagePackProviderAttribute(int order = 0, int type = 0)
         {
             Order = order;
             Type = type;

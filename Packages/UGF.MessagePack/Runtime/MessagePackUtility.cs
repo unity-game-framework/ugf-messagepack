@@ -10,9 +10,9 @@ namespace UGF.MessagePack.Runtime
 {
     public static class MessagePackUtility
     {
-        public static IMessagePackProvider CreateProvider(IMessagePackContext context, MessagePackFormatterType type, Assembly assembly = null)
+        public static IMessagePackProvider CreateProvider(IMessagePackContext context = null, MessagePackFormatterType type = MessagePackFormatterType.Unknown, Assembly assembly = null)
         {
-            return CreateProvider(context, (int)type, assembly);
+            return CreateProvider(context ?? MessagePackContext.Empty, (int)type, assembly);
         }
 
         public static IMessagePackProvider CreateProvider(IMessagePackContext context, int type, Assembly assembly = null)
@@ -32,9 +32,9 @@ namespace UGF.MessagePack.Runtime
             return provider;
         }
 
-        public static void GetFormatters(IMessagePackProvider provider, IMessagePackContext context, IDictionary<Type, IMessagePackFormatter> formatters, MessagePackFormatterType formatterType, Assembly assembly = null)
+        public static void GetFormatters(IMessagePackProvider provider, IMessagePackContext context, IDictionary<Type, IMessagePackFormatter> formatters, MessagePackFormatterType formatterType = MessagePackFormatterType.Unknown, Assembly assembly = null)
         {
-            GetFormatters(provider, context, formatters, (int)formatterType, assembly);
+            GetFormatters(provider, context ?? MessagePackContext.Empty, formatters, (int)formatterType, assembly);
         }
 
         public static void GetFormatters(IMessagePackProvider provider, IMessagePackContext context, IDictionary<Type, IMessagePackFormatter> formatters, int formatterType, Assembly assembly = null)
@@ -54,7 +54,7 @@ namespace UGF.MessagePack.Runtime
             }
         }
 
-        public static void GetProviders(ICollection<IMessagePackProvider> providers, MessagePackFormatterType formatterType, Assembly assembly = null)
+        public static void GetProviders(ICollection<IMessagePackProvider> providers, MessagePackFormatterType formatterType = MessagePackFormatterType.Unknown, Assembly assembly = null)
         {
             GetProviders(providers, (int)formatterType, assembly);
         }

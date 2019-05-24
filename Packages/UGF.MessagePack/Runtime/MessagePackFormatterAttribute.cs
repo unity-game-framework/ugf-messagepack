@@ -9,7 +9,7 @@ namespace UGF.MessagePack.Runtime
     {
         public int Type { get; }
 
-        public MessagePackFormatterAttribute(int type)
+        public MessagePackFormatterAttribute(int type = 0)
         {
             Type = type;
         }
