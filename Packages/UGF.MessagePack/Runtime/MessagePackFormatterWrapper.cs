@@ -1,3 +1,4 @@
+using System;
 using MessagePack;
 
 namespace UGF.MessagePack.Runtime
@@ -9,8 +10,8 @@ namespace UGF.MessagePack.Runtime
 
         public MessagePackFormatterWrapper(IMessagePackProvider provider, IMessagePackContext context, global::MessagePack.Formatters.IMessagePackFormatter<T> formatter, IFormatterResolver resolver) : base(provider, context)
         {
-            Formatter = formatter;
-            Resolver = resolver;
+            Formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
+            Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
         }
 
         public override void Serialize(ref MessagePackWriter writer, T value)

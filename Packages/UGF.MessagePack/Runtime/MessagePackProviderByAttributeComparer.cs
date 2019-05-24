@@ -9,10 +9,10 @@ namespace UGF.MessagePack.Runtime
 
         public int Compare(IMessagePackProvider x, IMessagePackProvider y)
         {
-            int xPriority = x?.GetType().GetCustomAttribute<MessagePackProviderAttribute>()?.Priority ?? 0;
-            int yPriority = y?.GetType().GetCustomAttribute<MessagePackProviderAttribute>()?.Priority ?? 0;
+            int xOrder = x?.GetType().GetCustomAttribute<MessagePackProviderAttribute>()?.Order ?? 0;
+            int yOrder = y?.GetType().GetCustomAttribute<MessagePackProviderAttribute>()?.Order ?? 0;
 
-            return xPriority.CompareTo(yPriority);
+            return xOrder.CompareTo(yOrder);
         }
     }
 }

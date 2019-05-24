@@ -2,8 +2,9 @@ namespace UGF.MessagePack.Runtime
 {
     public enum MessagePackFormatterType
     {
-        Forward = 0,
-        Keyed = 1,
-        Named = 2
+        Unknown = 0,
+        Forward = 1,
+        Keyed = 2,
+        Named = 3
     }
 }

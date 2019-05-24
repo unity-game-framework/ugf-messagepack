@@ -1,6 +1,6 @@
 using MessagePack;
 
-namespace UGF.MessagePack.Runtime.Formatters.Enums
+namespace UGF.MessagePack.Runtime.Formatter.Enums
 {
     public class EnumFormatterInt16<T> : MessagePackFormatter<T>
     {

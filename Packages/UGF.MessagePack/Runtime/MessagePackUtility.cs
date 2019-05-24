@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using MessagePack.Resolvers;
 using UGF.Assemblies.Runtime;
-using UGF.MessagePack.Runtime.Formatters.Enums;
+using UGF.MessagePack.Runtime.Formatter.Enums;
 using UGF.Types.Runtime;
 
 namespace UGF.MessagePack.Runtime
@@ -11,6 +11,11 @@ namespace UGF.MessagePack.Runtime
     public static class MessagePackUtility
     {
         public static IMessagePackProvider CreateProvider(IMessagePackContext context, MessagePackFormatterType type, Assembly assembly = null)
+        {
+            return CreateProvider(context, (int)type, assembly);
+        }
+
+        public static IMessagePackProvider CreateProvider(IMessagePackContext context, int type, Assembly assembly = null)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
@@ -29,6 +34,11 @@ namespace UGF.MessagePack.Runtime
 
         public static void GetFormatters(IMessagePackProvider provider, IMessagePackContext context, IDictionary<Type, IMessagePackFormatter> formatters, MessagePackFormatterType formatterType, Assembly assembly = null)
         {
+            GetFormatters(provider, context, formatters, (int)formatterType, assembly);
+        }
+
+        public static void GetFormatters(IMessagePackProvider provider, IMessagePackContext context, IDictionary<Type, IMessagePackFormatter> formatters, int formatterType, Assembly assembly = null)
+        {
             if (provider == null) throw new ArgumentNullException(nameof(provider));
             if (context == null) throw new ArgumentNullException(nameof(context));
             if (formatters == null) throw new ArgumentNullException(nameof(formatters));
@@ -37,7 +47,7 @@ namespace UGF.MessagePack.Runtime
             {
                 var attribute = type.GetCustomAttribute<MessagePackFormatterAttribute>(false);
 
-                if (attribute.Type == (int)formatterType && TypesUtility.TryCreateType(type, new object[] { provider, context }, out IMessagePackFormatter formatter))
+                if (attribute.Type == formatterType && TypesUtility.TryCreateType(type, new object[] { provider, context }, out IMessagePackFormatter formatter))
                 {
                     formatters.Add(type, formatter);
                 }
@@ -46,13 +56,18 @@ namespace UGF.MessagePack.Runtime
 
         public static void GetProviders(ICollection<IMessagePackProvider> providers, MessagePackFormatterType formatterType, Assembly assembly = null)
         {
+            GetProviders(providers, (int)formatterType, assembly);
+        }
+
+        public static void GetProviders(ICollection<IMessagePackProvider> providers, int formatterType, Assembly assembly = null)
+        {
             if (providers == null) throw new ArgumentNullException(nameof(providers));
 
             foreach (Type type in AssemblyUtility.GetBrowsableTypes<MessagePackProviderAttribute>(assembly))
             {
                 var attribute = type.GetCustomAttribute<MessagePackProviderAttribute>(false);
 
-                if (attribute.Type == (int)formatterType && TypesUtility.TryCreateType(type, out IMessagePackProvider provider))
+                if (attribute.Type == formatterType && TypesUtility.TryCreateType(type, out IMessagePackProvider provider))
                 {
                     providers.Add(provider);
                 }

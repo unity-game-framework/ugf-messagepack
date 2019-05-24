@@ -10,8 +10,8 @@ namespace UGF.MessagePack.Runtime
 
         protected MessagePackFormatter(IMessagePackProvider provider, IMessagePackContext context)
         {
-            Provider = provider;
-            Context = context;
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public abstract void Serialize(ref MessagePackWriter writer, T value);

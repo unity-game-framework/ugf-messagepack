@@ -37,7 +37,18 @@ namespace UGF.MessagePack.Runtime
         {
             if (!base.TryGet(type, out formatter))
             {
-                throw new NotSupportedException($"Generate formatter wrapper in non-generic way not supported: '{type}'.");
+                object formatterInner = Resolver.GetFormatterDynamic(type);
+
+                if (formatterInner != null)
+                {
+                    Type formatterType = typeof(MessagePackFormatterWrapper<>).MakeGenericType(type);
+
+                    formatter = (IMessagePackFormatter)Activator.CreateInstance(formatterType, this, Context, formatterInner, Resolver);
+
+                    Formatters.Add(type, formatter);
+
+                    return true;
+                }
             }
 
             return formatter != null;

@@ -7,6 +7,16 @@ namespace UGF.MessagePack.Runtime
     {
         public Dictionary<Type, IMessagePackFormatter> Formatters { get; } = new Dictionary<Type, IMessagePackFormatter>();
 
+        public void Add<T>(IMessagePackFormatter<T> formatter)
+        {
+            Formatters.Add(typeof(T), formatter);
+        }
+
+        public void Remove<T>()
+        {
+            Formatters.Remove(typeof(T));
+        }
+
         public virtual bool TryGet<T>(out IMessagePackFormatter<T> formatter)
         {
             if (Formatters.TryGetValue(typeof(T), out IMessagePackFormatter formatterBase) && formatterBase is IMessagePackFormatter<T> formatterGeneric)

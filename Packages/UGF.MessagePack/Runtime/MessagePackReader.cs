@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using MessagePack;
 
 namespace UGF.MessagePack.Runtime
@@ -203,6 +204,30 @@ namespace UGF.MessagePack.Runtime
             Position += readSize;
 
             return value;
+        }
+
+        public string Print(StringBuilder builder = null)
+        {
+            if (builder == null)
+            {
+                builder = new StringBuilder();
+            }
+
+            builder.Append('[');
+
+            for (int i = 0; i < Position; i++)
+            {
+                builder.Append(Buffer[i]);
+
+                if (i != Position - 1)
+                {
+                    builder.Append(", ");
+                }
+            }
+
+            builder.Append(']');
+
+            return builder.ToString();
         }
     }
 }
