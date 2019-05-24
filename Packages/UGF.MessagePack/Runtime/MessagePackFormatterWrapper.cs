@@ -3,7 +3,7 @@ using MessagePack;
 
 namespace UGF.MessagePack.Runtime
 {
-    public class MessagePackFormatterWrapper<T> : MessagePackFormatter<T>
+    public class MessagePackFormatterWrapper<T> : MessagePackFormatterBase<T>
     {
         public global::MessagePack.Formatters.IMessagePackFormatter<T> Formatter { get; }
         public IFormatterResolver Resolver { get; }

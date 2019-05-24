@@ -3,7 +3,7 @@ using System;
 namespace UGF.MessagePack.Runtime.Tests.TestAssembly
 {
     [MessagePackFormatter(MessagePackFormatterType.Forward)]
-    public sealed class TestTargetFormatterForward : MessagePackFormatter<TestTarget>
+    public sealed class TestTargetFormatterForward : MessagePackFormatterBase<TestTarget>
     {
         private readonly IMessagePackFormatter<TypeCode> m_formatterTypeCode;
 

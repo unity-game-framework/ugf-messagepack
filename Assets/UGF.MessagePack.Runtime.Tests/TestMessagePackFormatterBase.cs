@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace UGF.MessagePack.Runtime.Tests
 {
-    public class TestMessagePackFormatter
+    public class TestMessagePackFormatterBase
     {
         private class Target
         {
@@ -10,7 +10,7 @@ namespace UGF.MessagePack.Runtime.Tests
             public int IntValue { get; set; } = 10;
         }
 
-        private class Formatter : MessagePackFormatter<Target>
+        private class Formatter : MessagePackFormatterBase<Target>
         {
             public Formatter(IMessagePackProvider provider, IMessagePackContext context) : base(provider, context)
             {

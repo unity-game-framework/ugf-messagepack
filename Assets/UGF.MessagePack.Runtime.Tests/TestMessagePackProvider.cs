@@ -8,7 +8,7 @@ namespace UGF.MessagePack.Runtime.Tests
         {
         }
 
-        private class Formatter : MessagePackFormatter<Target>
+        private class Formatter : MessagePackFormatterBase<Target>
         {
             public Formatter(IMessagePackProvider provider, IMessagePackContext context) : base(provider, context)
             {

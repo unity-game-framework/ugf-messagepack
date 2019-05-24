@@ -2,13 +2,13 @@ using System;
 
 namespace UGF.MessagePack.Runtime
 {
-    public abstract class MessagePackFormatter<T> : IMessagePackFormatter<T>
+    public abstract class MessagePackFormatterBase<T> : IMessagePackFormatter<T>
     {
         public IMessagePackProvider Provider { get; }
         public IMessagePackContext Context { get; }
         public Type TargetType { get; } = typeof(T);
 
-        protected MessagePackFormatter(IMessagePackProvider provider, IMessagePackContext context)
+        protected MessagePackFormatterBase(IMessagePackProvider provider, IMessagePackContext context)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
             Context = context ?? throw new ArgumentNullException(nameof(context));

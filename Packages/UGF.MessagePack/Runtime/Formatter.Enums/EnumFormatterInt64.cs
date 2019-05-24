@@ -2,7 +2,7 @@ using MessagePack;
 
 namespace UGF.MessagePack.Runtime.Formatter.Enums
 {
-    public class EnumFormatterInt64<T> : MessagePackFormatter<T>
+    public class EnumFormatterInt64<T> : MessagePackFormatterBase<T>
     {
         public EnumFormatterInt64(IMessagePackProvider provider, IMessagePackContext context) : base(provider, context)
         {

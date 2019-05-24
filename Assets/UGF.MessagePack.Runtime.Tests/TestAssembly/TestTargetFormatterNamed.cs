@@ -5,7 +5,7 @@ using MessagePack.Internal;
 namespace UGF.MessagePack.Runtime.Tests.TestAssembly
 {
     [MessagePackFormatter(MessagePackFormatterType.Named)]
-    public class TestTargetFormatterNamed : MessagePackFormatter<TestTarget>
+    public class TestTargetFormatterNamed : MessagePackFormatterBase<TestTarget>
     {
         private readonly IMessagePackFormatter<TypeCode> m_formatterTypeCode;
 
