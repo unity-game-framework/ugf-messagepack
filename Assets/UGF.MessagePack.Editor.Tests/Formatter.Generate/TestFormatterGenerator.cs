@@ -1,37 +1,36 @@
 using System;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Editing;
 using NUnit.Framework;
 using UGF.Code.Analysis.Editor;
 using UGF.Code.Generate.Editor;
 using UGF.MessagePack.Editor.Formatter.Generate;
-using UGF.MessagePack.Runtime;
 
 namespace UGF.MessagePack.Editor.Tests.Formatter.Generate
 {
     public class TestFormatterGenerator
     {
+        public class Target
+        {
+        }
+
         [Test]
         public void Generate()
         {
-            FormatterGenerateInfo info = FormatterGenerateUtility.CreateDefaultInfo(typeof(bool));
+            CSharpCompilation compilation = CodeAnalysisEditorUtility.ProjectCompilation;
+            SyntaxGenerator generator = CodeAnalysisEditorUtility.Generator;
 
-            CodeAnalysisEditorUtility.ProjectCompilation.TryConstructTypeSymbol(typeof(TypeCode), out INamedTypeSymbol typeCodeTypeSymbol);
-            CodeAnalysisEditorUtility.ProjectCompilation.TryConstructTypeSymbol(typeof(IMessagePackFormatter<>).MakeGenericType(typeof(TypeCode)), out INamedTypeSymbol formatterTypeSymbol);
+            var formatterGenerator = new FormatterGenerator<FormatterGenerateInfo>(compilation, generator);
 
-            SyntaxNode typeCodeType = CodeAnalysisEditorUtility.Generator.TypeExpression(typeCodeTypeSymbol);
-            SyntaxNode formatterType = CodeAnalysisEditorUtility.Generator.TypeExpression(formatterTypeSymbol);
+            SyntaxNode targetType = generator.TypeExpression(compilation.ConstructTypeSymbol(typeof(Target)));
+            var info = new FormatterGenerateInfo("MessagePackFormatterTarget", targetType);
 
-            info.FormatterInfos.Add("m_formatterTypeCode", new FormatterGenerateInfo.FormatterInfo
-            {
-                FormatterType = formatterType,
-                TargetType = typeCodeType
-            });
+            info.InitializeFormatterTypes.Add("TypeCode", generator.TypeExpression(compilation.ConstructTypeSymbol(typeof(TypeCode))));
 
-            var generator = new FormatterGenerator<FormatterGenerateInfo>();
+            SyntaxNode node = formatterGenerator.Generate(info);
 
-            SyntaxNode syntaxNode = generator.Generate(info, CodeAnalysisEditorUtility.Generator);
-
-            Assert.Pass(syntaxNode.NormalizeWhitespace().ToFullString());
+            Assert.Pass(node.NormalizeWhitespace().ToFullString());
         }
     }
 }

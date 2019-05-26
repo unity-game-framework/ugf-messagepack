@@ -5,23 +5,15 @@ namespace UGF.MessagePack.Editor.Formatter.Generate
 {
     public class FormatterGenerateInfo
     {
-        public string Namespace { get; set; }
+        public string Namespace { get; set; } = "UGF.MessagePack.Generated";
         public string Name { get; set; }
-        public SyntaxNode BaseType { get; set; }
         public SyntaxNode TargetType { get; set; }
-        public SyntaxNode ProviderType { get; set; }
-        public SyntaxNode ContextType { get; set; }
-        public SyntaxNode WriterType { get; set; }
-        public SyntaxNode ReaderType { get; set; }
-        public Dictionary<string, FormatterInfo> FormatterInfos { get; } = new Dictionary<string, FormatterInfo>();
-        public SyntaxNode ArgumentExceptionType { get; set; }
-        public string ArgumentExceptionText { get; set; } = "The formatter for the specified type not found: '{0}'.";
-        public SyntaxNode StringType { get; set; }
+        public Dictionary<string, SyntaxNode> InitializeFormatterTypes { get; } = new Dictionary<string, SyntaxNode>();
 
-        public class FormatterInfo
+        public FormatterGenerateInfo(string name, SyntaxNode targetType)
         {
-            public SyntaxNode FormatterType { get; set; }
-            public SyntaxNode TargetType { get; set; }
+            Name = name;
+            TargetType = targetType;
         }
     }
 }

@@ -28,6 +28,7 @@ namespace UGF.MessagePack.Runtime
 
             provider.Providers.Add(new EnumProvider(context));
             provider.Providers.Add(new MessagePackProviderWrapper(context, BuiltinResolver.Instance));
+            provider.Providers.Add(new MessagePackProviderWrapper(context, DynamicGenericResolver.Instance));
 
             provider.Initialize();
 

@@ -6,20 +6,29 @@ namespace UGF.MessagePack.Editor.Formatter.Generate
 {
     public abstract class FormatterGeneratorBase<TInfo> where TInfo : FormatterGenerateInfo
     {
-        public abstract SyntaxNode Generate(TInfo info, SyntaxGenerator generator);
-        protected abstract SyntaxNode GetNamespace(TInfo info, SyntaxGenerator generator);
-        protected abstract SyntaxNode GetClass(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> members);
-        protected abstract IEnumerable<SyntaxNode> GetClassMembers(TInfo info, SyntaxGenerator generator);
-        protected abstract IEnumerable<SyntaxNode> GetFields(TInfo info, SyntaxGenerator generator);
-        protected abstract SyntaxNode GetConstructor(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> statements);
-        protected abstract IEnumerable<SyntaxNode> GetConstructorStatements(TInfo info, SyntaxGenerator generator);
-        protected abstract SyntaxNode GetInitializeMethod(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> statements);
-        protected abstract IEnumerable<SyntaxNode> GetInitializeMethodStatements(TInfo info, SyntaxGenerator generator);
-        protected abstract SyntaxNode GetSerializeMethod(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> statements);
-        protected abstract IEnumerable<SyntaxNode> GetSerializeMethodStatements(TInfo info, SyntaxGenerator generator);
-        protected abstract IEnumerable<SyntaxNode> GetWriteStatements(TInfo info, SyntaxGenerator generator);
-        protected abstract SyntaxNode GetDeserializeMethod(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> statements);
-        protected abstract IEnumerable<SyntaxNode> GetDeserializeMethodStatements(TInfo info, SyntaxGenerator generator);
-        protected abstract IEnumerable<SyntaxNode> GetReadStatements(TInfo info, SyntaxGenerator generator);
+        public Compilation Compilation { get; }
+        public SyntaxGenerator Generator { get; }
+
+        protected FormatterGeneratorBase(Compilation compilation, SyntaxGenerator generator)
+        {
+            Compilation = compilation;
+            Generator = generator;
+        }
+
+        public abstract SyntaxNode Generate(TInfo info);
+        protected abstract SyntaxNode GetNamespace(TInfo info);
+        protected abstract SyntaxNode GetClass(TInfo info, IEnumerable<SyntaxNode> members);
+        protected abstract IEnumerable<SyntaxNode> GetClassMembers(TInfo info);
+        protected abstract IEnumerable<SyntaxNode> GetFields(TInfo info);
+        protected abstract SyntaxNode GetConstructor(TInfo info, IEnumerable<SyntaxNode> statements);
+        protected abstract IEnumerable<SyntaxNode> GetConstructorStatements(TInfo info);
+        protected abstract SyntaxNode GetInitializeMethod(TInfo info, IEnumerable<SyntaxNode> statements);
+        protected abstract IEnumerable<SyntaxNode> GetInitializeMethodStatements(TInfo info);
+        protected abstract SyntaxNode GetSerializeMethod(TInfo info, IEnumerable<SyntaxNode> statements);
+        protected abstract IEnumerable<SyntaxNode> GetSerializeMethodStatements(TInfo info);
+        protected abstract IEnumerable<SyntaxNode> GetWriteStatements(TInfo info);
+        protected abstract SyntaxNode GetDeserializeMethod(TInfo info, IEnumerable<SyntaxNode> statements);
+        protected abstract IEnumerable<SyntaxNode> GetDeserializeMethodStatements(TInfo info);
+        protected abstract IEnumerable<SyntaxNode> GetReadStatements(TInfo info);
     }
 }

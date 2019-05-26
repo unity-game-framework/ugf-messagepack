@@ -1,142 +1,181 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Editing;
+using UGF.Code.Generate.Editor;
+using UGF.MessagePack.Runtime;
 
 namespace UGF.MessagePack.Editor.Formatter.Generate
 {
     public class FormatterGenerator<TInfo> : FormatterGeneratorBase<TInfo> where TInfo : FormatterGenerateInfo
     {
-        public override SyntaxNode Generate(TInfo info, SyntaxGenerator generator)
+        protected SyntaxNode ProviderType { get; }
+        protected SyntaxNode ContextType { get; }
+        protected SyntaxNode WriterType { get; }
+        protected SyntaxNode ReaderType { get; }
+        protected SyntaxNode ArgumentExceptionType { get; }
+        protected SyntaxNode StringType { get; }
+        protected SyntaxNode VoidType { get; }
+        protected string ArgumentExceptionText { get; } = "The formatter for the specified type not found: '{0}'.";
+        protected string BaseTypeGenericIdentifier { get; }
+        protected string FormatterInterfaceTypeGenericIdentifier { get; }
+
+        public FormatterGenerator(Compilation compilation, SyntaxGenerator generator) : base(compilation, generator)
         {
-            return generator.CompilationUnit(GetNamespace(info, generator));
+            ProviderType = generator.TypeExpression(compilation.ConstructTypeSymbol(typeof(IMessagePackProvider)));
+            ContextType = generator.TypeExpression(compilation.ConstructTypeSymbol(typeof(IMessagePackContext)));
+            WriterType = generator.TypeExpression(compilation.ConstructTypeSymbol(typeof(MessagePackWriter)));
+            ReaderType = generator.TypeExpression(compilation.ConstructTypeSymbol(typeof(MessagePackReader)));
+            ArgumentExceptionType = generator.TypeExpression(compilation.ConstructTypeSymbol(typeof(ArgumentException)));
+            StringType = generator.TypeExpression(compilation.ConstructTypeSymbol(typeof(string)));
+            VoidType = SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
+
+            INamedTypeSymbol baseTypeSymbol = compilation.ConstructTypeSymbol(typeof(MessagePackFormatterBase<>));
+            INamedTypeSymbol formatterInterfaceTypeSymbol = compilation.ConstructTypeSymbol(typeof(IMessagePackFormatter<>));
+
+            BaseTypeGenericIdentifier = baseTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("<T>", string.Empty);
+            FormatterInterfaceTypeGenericIdentifier = formatterInterfaceTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("<T>", string.Empty);
         }
 
-        protected override SyntaxNode GetNamespace(TInfo info, SyntaxGenerator generator)
+        public override SyntaxNode Generate(TInfo info)
         {
-            return generator.NamespaceDeclaration(info.Namespace, GetClass(info, generator, GetClassMembers(info, generator)));
+            return Generator.CompilationUnit(GetNamespace(info));
         }
 
-        protected override SyntaxNode GetClass(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> members)
+        protected override SyntaxNode GetNamespace(TInfo info)
         {
-            return generator.ClassDeclaration(info.Name, null, Accessibility.Public, DeclarationModifiers.None, info.BaseType, null, members);
+            return Generator.NamespaceDeclaration(info.Namespace, GetClass(info, GetClassMembers(info)));
         }
 
-        protected override IEnumerable<SyntaxNode> GetClassMembers(TInfo info, SyntaxGenerator generator)
+        protected override SyntaxNode GetClass(TInfo info, IEnumerable<SyntaxNode> members)
         {
-            foreach (SyntaxNode node in GetFields(info, generator))
+            SyntaxNode baseType = Generator.GenericName(BaseTypeGenericIdentifier, info.TargetType);
+
+            return Generator.ClassDeclaration(info.Name, null, Accessibility.Public, DeclarationModifiers.None, baseType, null, members);
+        }
+
+        protected override IEnumerable<SyntaxNode> GetClassMembers(TInfo info)
+        {
+            foreach (SyntaxNode node in GetFields(info))
             {
                 yield return node;
             }
 
-            yield return GetConstructor(info, generator, GetConstructorStatements(info, generator));
-            yield return GetInitializeMethod(info, generator, GetInitializeMethodStatements(info, generator));
-            yield return GetSerializeMethod(info, generator, GetSerializeMethodStatements(info, generator));
-            yield return GetDeserializeMethod(info, generator, GetDeserializeMethodStatements(info, generator));
+            yield return GetConstructor(info, GetConstructorStatements(info));
+            yield return GetInitializeMethod(info, GetInitializeMethodStatements(info));
+            yield return GetSerializeMethod(info, GetSerializeMethodStatements(info));
+            yield return GetDeserializeMethod(info, GetDeserializeMethodStatements(info));
         }
 
-        protected override IEnumerable<SyntaxNode> GetFields(TInfo info, SyntaxGenerator generator)
+        protected override IEnumerable<SyntaxNode> GetFields(TInfo info)
         {
-            foreach (KeyValuePair<string, FormatterGenerateInfo.FormatterInfo> pair in info.FormatterInfos)
+            foreach (KeyValuePair<string, SyntaxNode> pair in info.InitializeFormatterTypes)
             {
-                yield return generator.FieldDeclaration(pair.Key, pair.Value.FormatterType);
+                yield return Generator.FieldDeclaration($"m_formatter{pair.Key}", Generator.GenericName(FormatterInterfaceTypeGenericIdentifier, pair.Value));
             }
         }
 
-        protected override SyntaxNode GetConstructor(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> statements)
+        protected override SyntaxNode GetConstructor(TInfo info, IEnumerable<SyntaxNode> statements)
         {
-            SyntaxNode providerParameter = generator.ParameterDeclaration("provider", info.ProviderType);
-            SyntaxNode contextParameter = generator.ParameterDeclaration("context", info.ContextType);
-            SyntaxNode providerArgument = generator.Argument(generator.IdentifierName("provider"));
-            SyntaxNode contextArgument = generator.Argument(generator.IdentifierName("context"));
+            SyntaxNode providerParameter = Generator.ParameterDeclaration("provider", ProviderType);
+            SyntaxNode contextParameter = Generator.ParameterDeclaration("context", ContextType);
 
-            return generator.ConstructorDeclaration(info.Name, new[] { providerParameter, contextParameter }, Accessibility.Public, DeclarationModifiers.None, new[] { providerArgument, contextArgument }, statements);
+            SyntaxNode providerArgument = Generator.Argument(Generator.IdentifierName("provider"));
+            SyntaxNode contextArgument = Generator.Argument(Generator.IdentifierName("context"));
+
+            return Generator.ConstructorDeclaration(info.Name, new[] { providerParameter, contextParameter }, Accessibility.Public, DeclarationModifiers.None, new[] { providerArgument, contextArgument }, statements);
         }
 
-        protected override IEnumerable<SyntaxNode> GetConstructorStatements(TInfo info, SyntaxGenerator generator)
+        protected override IEnumerable<SyntaxNode> GetConstructorStatements(TInfo info)
         {
             return Enumerable.Empty<SyntaxNode>();
         }
 
-        protected override SyntaxNode GetInitializeMethod(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> statements)
+        protected override SyntaxNode GetInitializeMethod(TInfo info, IEnumerable<SyntaxNode> statements)
         {
-            SyntaxNode returnType = SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
-
-            return generator.MethodDeclaration("Initialize", null, null, returnType, Accessibility.Public, DeclarationModifiers.Override, statements);
+            return Generator.MethodDeclaration("Initialize", null, null, VoidType, Accessibility.Public, DeclarationModifiers.Override, statements);
         }
 
-        protected override IEnumerable<SyntaxNode> GetInitializeMethodStatements(TInfo info, SyntaxGenerator generator)
+        protected override IEnumerable<SyntaxNode> GetInitializeMethodStatements(TInfo info)
         {
-            yield return generator.InvocationExpression(generator.MemberAccessExpression(generator.BaseExpression(), "Initialize"));
+            yield return Generator.InvocationExpression(Generator.MemberAccessExpression(Generator.BaseExpression(), "Initialize"));
 
-            foreach (KeyValuePair<string, FormatterGenerateInfo.FormatterInfo> pair in info.FormatterInfos)
+            foreach (KeyValuePair<string, SyntaxNode> pair in info.InitializeFormatterTypes)
             {
-                SyntaxNode access = generator.MemberAccessExpression(generator.IdentifierName("Provider"), "TryGet");
-                SyntaxNode argument = generator.Argument(RefKind.Out, generator.IdentifierName(pair.Key));
-                SyntaxNode condition = generator.LogicalNotExpression(generator.InvocationExpression(access, argument));
-                SyntaxNode stringFormatAccess = generator.MemberAccessExpression(info.StringType, "Format");
-                SyntaxNode exceptionArgument = generator.InvocationExpression(stringFormatAccess, generator.LiteralExpression(info.ArgumentExceptionText), generator.TypeOfExpression(pair.Value.TargetType));
-                SyntaxNode exception = generator.ObjectCreationExpression(info.ArgumentExceptionType, exceptionArgument);
-                SyntaxNode trueStatement = generator.ThrowStatement(exception);
+                SyntaxNode providerTryGetAccess = Generator.MemberAccessExpression(Generator.IdentifierName("Provider"), "TryGet");
+                SyntaxNode providerTryGetArgument = Generator.Argument(RefKind.Out, Generator.IdentifierName($"m_formatter{pair.Key}"));
+                SyntaxNode providerTryGetInvocation = Generator.InvocationExpression(providerTryGetAccess, providerTryGetArgument);
 
-                yield return generator.IfStatement(condition, new[] { trueStatement });
+                SyntaxNode stringFormatAccess = Generator.MemberAccessExpression(StringType, "Format");
+                SyntaxNode stringFormatArgumentText = Generator.LiteralExpression(ArgumentExceptionText);
+                SyntaxNode stringFormatArgumentTypeOfTarget = Generator.TypeOfExpression(pair.Value);
+                SyntaxNode stringFormatInvocation = Generator.InvocationExpression(stringFormatAccess, stringFormatArgumentText, stringFormatArgumentTypeOfTarget);
+
+                SyntaxNode exception = Generator.ObjectCreationExpression(ArgumentExceptionType, stringFormatInvocation);
+
+                SyntaxNode condition = Generator.LogicalNotExpression(providerTryGetInvocation);
+                SyntaxNode trueStatement = Generator.ThrowStatement(exception);
+
+                yield return Generator.IfStatement(condition, new[] { trueStatement });
             }
         }
 
-        protected override SyntaxNode GetSerializeMethod(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> statements)
+        protected override SyntaxNode GetSerializeMethod(TInfo info, IEnumerable<SyntaxNode> statements)
         {
-            SyntaxNode returnType = SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
-            SyntaxNode writerParameter = generator.ParameterDeclaration("writer", info.WriterType, null, RefKind.Ref);
-            SyntaxNode valueParameter = generator.ParameterDeclaration("value", info.TargetType);
+            SyntaxNode writerParameter = Generator.ParameterDeclaration("writer", WriterType, null, RefKind.Ref);
+            SyntaxNode valueParameter = Generator.ParameterDeclaration("value", info.TargetType);
 
-            return generator.MethodDeclaration("Serialize", new[] { writerParameter, valueParameter }, null, returnType, Accessibility.Public, DeclarationModifiers.Override, statements);
+            return Generator.MethodDeclaration("Serialize", new[] { writerParameter, valueParameter }, null, VoidType, Accessibility.Public, DeclarationModifiers.Override, statements);
         }
 
-        protected override IEnumerable<SyntaxNode> GetSerializeMethodStatements(TInfo info, SyntaxGenerator generator)
+        protected override IEnumerable<SyntaxNode> GetSerializeMethodStatements(TInfo info)
         {
-            SyntaxNode condition = generator.ValueNotEqualsExpression(generator.IdentifierName("value"), generator.DefaultExpression(info.TargetType));
-            IEnumerable<SyntaxNode> trueStatements = GetWriteStatements(info, generator);
-            SyntaxNode access = generator.MemberAccessExpression(generator.IdentifierName("writer"), "WriteNil");
-            SyntaxNode falseStatement = generator.ExpressionStatement(generator.InvocationExpression(access));
+            SyntaxNode writerWriteNilAccess = Generator.MemberAccessExpression(Generator.IdentifierName("writer"), "WriteNil");
+            SyntaxNode writerWriteNilInvocation = Generator.InvocationExpression(writerWriteNilAccess);
 
-            yield return generator.IfStatement(condition, trueStatements, falseStatement);
+            SyntaxNode condition = Generator.ValueNotEqualsExpression(Generator.IdentifierName("value"), Generator.DefaultExpression(info.TargetType));
+
+            yield return Generator.IfStatement(condition, GetWriteStatements(info), writerWriteNilInvocation);
         }
 
-        protected override IEnumerable<SyntaxNode> GetWriteStatements(TInfo info, SyntaxGenerator generator)
+        protected override IEnumerable<SyntaxNode> GetWriteStatements(TInfo info)
         {
             return Enumerable.Empty<SyntaxNode>();
         }
 
-        protected override SyntaxNode GetDeserializeMethod(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> statements)
+        protected override SyntaxNode GetDeserializeMethod(TInfo info, IEnumerable<SyntaxNode> statements)
         {
-            SyntaxNode readerParameter = generator.ParameterDeclaration("reader", info.ReaderType, null, RefKind.Ref);
+            SyntaxNode readerParameter = Generator.ParameterDeclaration("reader", ReaderType, null, RefKind.Ref);
 
-            return generator.MethodDeclaration("Deserialize", new[] { readerParameter }, null, info.TargetType, Accessibility.Public, DeclarationModifiers.Override, statements);
+            return Generator.MethodDeclaration("Deserialize", new[] { readerParameter }, null, info.TargetType, Accessibility.Public, DeclarationModifiers.Override, statements);
         }
 
-        protected override IEnumerable<SyntaxNode> GetDeserializeMethodStatements(TInfo info, SyntaxGenerator generator)
+        protected override IEnumerable<SyntaxNode> GetDeserializeMethodStatements(TInfo info)
         {
-            SyntaxNode condition = generator.LogicalNotExpression(generator.InvocationExpression(generator.IdentifierName("reader.TryReadNil")));
-            IEnumerable<SyntaxNode> trueStatements = GetTrueStatements();
+            SyntaxNode readerTryReadNilAccess = Generator.MemberAccessExpression(Generator.IdentifierName("reader"), "TryReadNil");
+            SyntaxNode readerTryReadNilInvocation = Generator.InvocationExpression(readerTryReadNilAccess);
 
-            yield return generator.IfStatement(condition, trueStatements);
-            yield return generator.ReturnStatement(generator.DefaultExpression(info.TargetType));
+            SyntaxNode condition = Generator.LogicalNotExpression(readerTryReadNilInvocation);
+
+            yield return Generator.IfStatement(condition, GetTrueStatements());
+            yield return Generator.ReturnStatement(Generator.DefaultExpression(info.TargetType));
 
             IEnumerable<SyntaxNode> GetTrueStatements()
             {
-                yield return generator.LocalDeclarationStatement("value", generator.ObjectCreationExpression(info.TargetType));
+                yield return Generator.LocalDeclarationStatement("value", Generator.ObjectCreationExpression(info.TargetType));
 
-                foreach (SyntaxNode node in GetReadStatements(info, generator))
+                foreach (SyntaxNode node in GetReadStatements(info))
                 {
                     yield return node;
                 }
 
-                yield return generator.ReturnStatement(generator.IdentifierName("value"));
+                yield return Generator.ReturnStatement(Generator.IdentifierName("value"));
             }
         }
 
-        protected override IEnumerable<SyntaxNode> GetReadStatements(TInfo info, SyntaxGenerator generator)
+        protected override IEnumerable<SyntaxNode> GetReadStatements(TInfo info)
         {
             return Enumerable.Empty<SyntaxNode>();
         }
