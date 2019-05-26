@@ -22,47 +22,61 @@ namespace UGF.MessagePack.Editor.Formatter.Generate
             Type contextType = typeof(IMessagePackContext);
             Type writerType = typeof(MessagePackWriter);
             Type readerType = typeof(MessagePackReader);
+            Type argumentExceptionType = typeof(ArgumentException);
+            Type stringType = typeof(string);
 
-            if (!compilation.TryConstructTypeSymbol(baseType, out INamedTypeSymbol baseTypeTypeSymbol))
+            if (!compilation.TryConstructTypeSymbol(baseType, out INamedTypeSymbol baseTypeSymbol))
             {
-                throw new Exception();
+                throw new ArgumentException($"The type symbol for the specified type not found: '{baseType}'.");
             }
 
-            if (!compilation.TryConstructTypeSymbol(targetType, out INamedTypeSymbol targetTypeTypeSymbol))
+            if (!compilation.TryConstructTypeSymbol(targetType, out INamedTypeSymbol targetTypeSymbol))
             {
-                throw new Exception();
+                throw new ArgumentException($"The type symbol for the specified type not found: '{targetType}'.");
             }
 
             if (!compilation.TryConstructTypeSymbol(providerType, out INamedTypeSymbol providerTypeSymbol))
             {
-                throw new Exception();
+                throw new ArgumentException($"The type symbol for the specified type not found: '{providerType}'.");
             }
 
             if (!compilation.TryConstructTypeSymbol(contextType, out INamedTypeSymbol contextTypeSymbol))
             {
-                throw new Exception();
+                throw new ArgumentException($"The type symbol for the specified type not found: '{contextType}'.");
             }
 
             if (!compilation.TryConstructTypeSymbol(writerType, out INamedTypeSymbol writerTypeSymbol))
             {
-                throw new Exception();
+                throw new ArgumentException($"The type symbol for the specified type not found: '{writerType}'.");
             }
 
             if (!compilation.TryConstructTypeSymbol(readerType, out INamedTypeSymbol readerTypeSymbol))
             {
-                throw new Exception();
+                throw new ArgumentException($"The type symbol for the specified type not found: '{readerType}'.");
+            }
+
+            if (!compilation.TryConstructTypeSymbol(argumentExceptionType, out INamedTypeSymbol argumentExceptionTypeSymbol))
+            {
+                throw new ArgumentException($"The type symbol for the specified type not found: '{argumentExceptionType}'.");
+            }
+
+            if (!compilation.TryConstructTypeSymbol(stringType, out INamedTypeSymbol stringTypeSymbol))
+            {
+                throw new ArgumentException($"The type symbol for the specified type not found: '{stringType}'.");
             }
 
             return new FormatterGenerateInfo
             {
                 Namespace = namespaceRoot,
                 Name = name,
-                BaseType = generator.TypeExpression(baseTypeTypeSymbol),
-                TargetType = generator.TypeExpression(targetTypeTypeSymbol),
+                BaseType = generator.TypeExpression(baseTypeSymbol),
+                TargetType = generator.TypeExpression(targetTypeSymbol),
                 ProviderType = generator.TypeExpression(providerTypeSymbol),
                 ContextType = generator.TypeExpression(contextTypeSymbol),
                 WriterType = generator.TypeExpression(writerTypeSymbol),
-                ReaderType = generator.TypeExpression(readerTypeSymbol)
+                ReaderType = generator.TypeExpression(readerTypeSymbol),
+                ArgumentExceptionType = generator.TypeExpression(argumentExceptionTypeSymbol),
+                StringType = generator.TypeExpression(stringTypeSymbol)
             };
         }
     }

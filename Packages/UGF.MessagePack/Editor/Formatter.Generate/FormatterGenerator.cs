@@ -38,7 +38,10 @@ namespace UGF.MessagePack.Editor.Formatter.Generate
 
         protected override IEnumerable<SyntaxNode> GetFields(TInfo info, SyntaxGenerator generator)
         {
-            return Enumerable.Empty<SyntaxNode>();
+            foreach (KeyValuePair<string, FormatterGenerateInfo.FormatterInfo> pair in info.FormatterInfos)
+            {
+                yield return generator.FieldDeclaration(pair.Key, pair.Value.FormatterType);
+            }
         }
 
         protected override SyntaxNode GetConstructor(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> statements)
@@ -66,6 +69,19 @@ namespace UGF.MessagePack.Editor.Formatter.Generate
         protected override IEnumerable<SyntaxNode> GetInitializeMethodStatements(TInfo info, SyntaxGenerator generator)
         {
             yield return generator.InvocationExpression(generator.MemberAccessExpression(generator.BaseExpression(), "Initialize"));
+
+            foreach (KeyValuePair<string, FormatterGenerateInfo.FormatterInfo> pair in info.FormatterInfos)
+            {
+                SyntaxNode access = generator.MemberAccessExpression(generator.IdentifierName("Provider"), "TryGet");
+                SyntaxNode argument = generator.Argument(RefKind.Out, generator.IdentifierName(pair.Key));
+                SyntaxNode condition = generator.LogicalNotExpression(generator.InvocationExpression(access, argument));
+                SyntaxNode stringFormatAccess = generator.MemberAccessExpression(info.StringType, "Format");
+                SyntaxNode exceptionArgument = generator.InvocationExpression(stringFormatAccess, generator.LiteralExpression(info.ArgumentExceptionText), generator.TypeOfExpression(pair.Value.TargetType));
+                SyntaxNode exception = generator.ObjectCreationExpression(info.ArgumentExceptionType, exceptionArgument);
+                SyntaxNode trueStatement = generator.ThrowStatement(exception);
+
+                yield return generator.IfStatement(condition, new[] { trueStatement });
+            }
         }
 
         protected override SyntaxNode GetSerializeMethod(TInfo info, SyntaxGenerator generator, IEnumerable<SyntaxNode> statements)
@@ -81,7 +97,8 @@ namespace UGF.MessagePack.Editor.Formatter.Generate
         {
             SyntaxNode condition = generator.ValueNotEqualsExpression(generator.IdentifierName("value"), generator.DefaultExpression(info.TargetType));
             IEnumerable<SyntaxNode> trueStatements = GetWriteStatements(info, generator);
-            SyntaxNode falseStatement = generator.ExpressionStatement(generator.InvocationExpression(generator.IdentifierName("writer.WriteNil")));
+            SyntaxNode access = generator.MemberAccessExpression(generator.IdentifierName("writer"), "WriteNil");
+            SyntaxNode falseStatement = generator.ExpressionStatement(generator.InvocationExpression(access));
 
             yield return generator.IfStatement(condition, trueStatements, falseStatement);
         }
