@@ -35,7 +35,7 @@ namespace UGF.MessagePack.Runtime.Tests
 
             Assert.NotNull(provider);
             Assert.AreEqual(1, provider.Formatters.Count);
-            Assert.AreEqual(3, provider.Providers.Count);
+            Assert.AreEqual(4, provider.Providers.Count);
         }
 
         [Test]
