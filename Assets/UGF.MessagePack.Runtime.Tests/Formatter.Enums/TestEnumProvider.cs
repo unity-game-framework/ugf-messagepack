@@ -40,7 +40,7 @@ namespace UGF.MessagePack.Runtime.Tests.Formatter.Enums
         [Test]
         public void TryGetT()
         {
-            var provider = new EnumProvider(MessagePackContext.Empty);
+            var provider = new EnumProvider(new MessagePackProvider(), MessagePackContext.Empty);
 
             bool result0 = provider.TryGet(out IMessagePackFormatter<EnumByte> formatter0);
             bool result1 = provider.TryGet(out IMessagePackFormatter<EnumSByte> formatter1);
@@ -80,7 +80,7 @@ namespace UGF.MessagePack.Runtime.Tests.Formatter.Enums
         [Test]
         public void TryGet()
         {
-            var provider = new EnumProvider(MessagePackContext.Empty);
+            var provider = new EnumProvider(new MessagePackProvider(), MessagePackContext.Empty);
 
             bool result0 = provider.TryGet(typeof(EnumByte), out IMessagePackFormatter formatter0);
             bool result1 = provider.TryGet(typeof(EnumSByte), out IMessagePackFormatter formatter1);

@@ -4,11 +4,13 @@ namespace UGF.MessagePack.Runtime.Formatter.Enums
 {
     public class EnumProvider : MessagePackProvider
     {
+        public IMessagePackProvider Provider { get; }
         public IMessagePackContext Context { get; }
 
-        public EnumProvider(IMessagePackContext context)
+        public EnumProvider(IMessagePackProvider provider, IMessagePackContext context)
         {
-            Context = context;
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public override bool TryGet<T>(out IMessagePackFormatter<T> formatter)
@@ -26,42 +28,42 @@ namespace UGF.MessagePack.Runtime.Formatter.Enums
                     {
                         case TypeCode.Byte:
                         {
-                            formatter = new EnumFormatterByte<T>(this, Context);
+                            formatter = new EnumFormatterByte<T>(Provider, Context);
                             break;
                         }
                         case TypeCode.Int16:
                         {
-                            formatter = new EnumFormatterInt16<T>(this, Context);
+                            formatter = new EnumFormatterInt16<T>(Provider, Context);
                             break;
                         }
                         case TypeCode.Int32:
                         {
-                            formatter = new EnumFormatterInt32<T>(this, Context);
+                            formatter = new EnumFormatterInt32<T>(Provider, Context);
                             break;
                         }
                         case TypeCode.Int64:
                         {
-                            formatter = new EnumFormatterInt64<T>(this, Context);
+                            formatter = new EnumFormatterInt64<T>(Provider, Context);
                             break;
                         }
                         case TypeCode.SByte:
                         {
-                            formatter = new EnumFormatterSByte<T>(this, Context);
+                            formatter = new EnumFormatterSByte<T>(Provider, Context);
                             break;
                         }
                         case TypeCode.UInt16:
                         {
-                            formatter = new EnumFormatterUInt16<T>(this, Context);
+                            formatter = new EnumFormatterUInt16<T>(Provider, Context);
                             break;
                         }
                         case TypeCode.UInt32:
                         {
-                            formatter = new EnumFormatterUInt32<T>(this, Context);
+                            formatter = new EnumFormatterUInt32<T>(Provider, Context);
                             break;
                         }
                         case TypeCode.UInt64:
                         {
-                            formatter = new EnumFormatterUInt64<T>(this, Context);
+                            formatter = new EnumFormatterUInt64<T>(Provider, Context);
                             break;
                         }
                         default: throw new ArgumentOutOfRangeException(nameof(type), $"The specified enum underlying type not supported: '{underlyingType}.'");
@@ -79,6 +81,8 @@ namespace UGF.MessagePack.Runtime.Formatter.Enums
 
         public override bool TryGet(Type type, out IMessagePackFormatter formatter)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
             if (type.IsEnum)
             {
                 if (!base.TryGet(type, out formatter))
@@ -132,7 +136,7 @@ namespace UGF.MessagePack.Runtime.Formatter.Enums
                         default: throw new ArgumentOutOfRangeException(nameof(type), $"The specified enum underlying type not supported: '{underlyingType}.'");
                     }
 
-                    formatter = (IMessagePackFormatter)Activator.CreateInstance(formatterType, this, Context);
+                    formatter = (IMessagePackFormatter)Activator.CreateInstance(formatterType, Provider, Context);
 
                     Formatters.Add(type, formatter);
                 }

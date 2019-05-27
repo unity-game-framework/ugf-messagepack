@@ -35,14 +35,14 @@ namespace UGF.MessagePack.Runtime.Tests.TestAssembly
         {
             base.Initialize();
 
-            if (!Provider.TryGet(out m_formatterTypeCode)) throw new ArgumentException($"The formatter for the specified type not found: '{typeof(TypeCode)}'.");
+            m_formatterTypeCode = Provider.Get<TypeCode>();
         }
 
         public override void Serialize(ref MessagePackWriter writer, TestTarget value)
         {
             if (value != default)
             {
-                writer.WriteUInt32(5U);
+                writer.WriteMapHeader(5);
                 writer.WriteBytes(m_keyToBytes[0]);
                 writer.WriteBoolean(value.BoolValue);
                 writer.WriteBytes(m_keyToBytes[1]);
@@ -65,7 +65,7 @@ namespace UGF.MessagePack.Runtime.Tests.TestAssembly
             if (!reader.TryReadNil())
             {
                 var value = new TestTarget();
-                uint count = reader.ReadUInt32();
+                int count = reader.ReadMapHeader();
 
                 for (int i = 0; i < count; i++)
                 {

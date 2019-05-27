@@ -5,11 +5,13 @@ namespace UGF.MessagePack.Runtime
 {
     public class MessagePackProviderWrapper : MessagePackProvider
     {
+        public IMessagePackProvider Provider { get; }
         public IMessagePackContext Context { get; }
         public IFormatterResolver Resolver { get; }
 
-        public MessagePackProviderWrapper(IMessagePackContext context, IFormatterResolver resolver)
+        public MessagePackProviderWrapper(IMessagePackProvider provider, IMessagePackContext context, IFormatterResolver resolver)
         {
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
             Context = context ?? throw new ArgumentNullException(nameof(context));
             Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
         }

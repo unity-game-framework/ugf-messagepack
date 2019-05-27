@@ -15,7 +15,7 @@ namespace UGF.MessagePack.Runtime.Tests.TestAssembly
         {
             base.Initialize();
 
-            if (!Provider.TryGet(out m_formatterTypeCode)) throw new ArgumentException($"The formatter for the specified type not found: '{typeof(TypeCode)}'.");
+            m_formatterTypeCode = Provider.Get<TypeCode>();
         }
 
         public override void Serialize(ref MessagePackWriter writer, TestTarget value)

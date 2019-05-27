@@ -8,7 +8,7 @@ namespace UGF.MessagePack.Runtime.Tests
         [Test]
         public void TryGetT()
         {
-            var provider = new MessagePackProviderWrapper(MessagePackContext.Empty, BuiltinResolver.Instance);
+            var provider = new MessagePackProviderWrapper(new MessagePackProvider(), MessagePackContext.Empty, BuiltinResolver.Instance);
 
             bool result0 = provider.TryGet(out IMessagePackFormatter<bool> formatter0);
             bool result1 = provider.TryGet(out IMessagePackFormatter<int> formatter1);
@@ -24,7 +24,7 @@ namespace UGF.MessagePack.Runtime.Tests
         [Test]
         public void TryGet()
         {
-            var provider = new MessagePackProviderWrapper(MessagePackContext.Empty, BuiltinResolver.Instance);
+            var provider = new MessagePackProviderWrapper(new MessagePackProvider(), MessagePackContext.Empty, BuiltinResolver.Instance);
 
             bool result0 = provider.TryGet(typeof(bool), out IMessagePackFormatter formatter0);
             bool result1 = provider.TryGet(typeof(int), out IMessagePackFormatter formatter1);

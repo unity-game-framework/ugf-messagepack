@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using MessagePack.Resolvers;
 using UGF.Assemblies.Runtime;
+using UGF.MessagePack.Runtime.Formatter.Collections;
 using UGF.MessagePack.Runtime.Formatter.Enums;
 using UGF.Types.Runtime;
 
@@ -26,9 +27,9 @@ namespace UGF.MessagePack.Runtime
 
             provider.Providers.Sort(MessagePackProviderByAttributeComparer.Default);
 
-            provider.Providers.Add(new EnumProvider(context));
-            provider.Providers.Add(new MessagePackProviderWrapper(context, BuiltinResolver.Instance));
-            provider.Providers.Add(new MessagePackProviderWrapper(context, DynamicGenericResolver.Instance));
+            provider.Providers.Add(new EnumProvider(provider, context));
+            provider.Providers.Add(new CollectionProvider(provider, context));
+            provider.Providers.Add(new MessagePackProviderWrapper(provider, context, BuiltinResolver.Instance));
 
             provider.Initialize();
 

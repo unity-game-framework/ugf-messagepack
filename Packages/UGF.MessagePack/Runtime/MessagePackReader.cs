@@ -206,6 +206,24 @@ namespace UGF.MessagePack.Runtime
             return value;
         }
 
+        public int ReadArrayHeader()
+        {
+            int value = MessagePackBinary.ReadArrayHeader(Buffer, Position, out int readSize);
+
+            Position += readSize;
+
+            return value;
+        }
+
+        public int ReadMapHeader()
+        {
+            int value = MessagePackBinary.ReadMapHeader(Buffer, Position, out int readSize);
+
+            Position += readSize;
+
+            return value;
+        }
+
         public string Print()
         {
             var builder = new StringBuilder();

@@ -15,23 +15,23 @@ namespace UGF.MessagePack.Runtime.Tests.TestAssembly
         {
             base.Initialize();
 
-            if (!Provider.TryGet(out m_formatterTypeCode)) throw new ArgumentException($"The formatter for the specified type not found: '{typeof(TypeCode)}'.");
+            m_formatterTypeCode = Provider.Get<TypeCode>();
         }
 
         public override void Serialize(ref MessagePackWriter writer, TestTarget value)
         {
             if (value != default)
             {
-                writer.WriteUInt32(5U);
-                writer.WriteUInt32(0U);
+                writer.WriteArrayHeader(5);
+                writer.WriteInt32(0);
                 writer.WriteBoolean(value.BoolValue);
-                writer.WriteUInt32(1U);
+                writer.WriteInt32(1);
                 writer.WriteInt32(value.IntValue);
-                writer.WriteUInt32(2U);
+                writer.WriteInt32(2);
                 writer.WriteSingle(value.FloatValue);
-                writer.WriteUInt32(3U);
+                writer.WriteInt32(3);
                 writer.WriteStringUnsafe(value.StringValue);
-                writer.WriteUInt32(4U);
+                writer.WriteInt32(4);
                 m_formatterTypeCode.Serialize(ref writer, value.EnumValue);
             }
             else
@@ -45,35 +45,35 @@ namespace UGF.MessagePack.Runtime.Tests.TestAssembly
             if (!reader.TryReadNil())
             {
                 var value = new TestTarget();
-                uint count = reader.ReadUInt32();
+                int count = reader.ReadArrayHeader();
 
-                for (uint i = 0; i < count; i++)
+                for (int i = 0; i < count; i++)
                 {
-                    uint key = reader.ReadUInt32();
+                    int key = reader.ReadInt32();
 
                     switch (key)
                     {
-                        case 0U:
+                        case 0:
                         {
                             value.BoolValue = reader.ReadBoolean();
                             break;
                         }
-                        case 1U:
+                        case 1:
                         {
                             value.IntValue = reader.ReadInt32();
                             break;
                         }
-                        case 2U:
+                        case 2:
                         {
                             value.FloatValue = reader.ReadSingle();
                             break;
                         }
-                        case 3U:
+                        case 3:
                         {
                             value.StringValue = reader.ReadString();
                             break;
                         }
-                        case 4U:
+                        case 4:
                         {
                             value.EnumValue = m_formatterTypeCode.Deserialize(ref reader);
                             break;

@@ -127,6 +127,16 @@ namespace UGF.MessagePack.Runtime
             Position += MessagePackBinary.WriteBytes(ref Buffer, Position, value);
         }
 
+        public void WriteArrayHeader(int count)
+        {
+            Position += MessagePackBinary.WriteArrayHeader(ref Buffer, Position, count);
+        }
+
+        public void WriteMapHeader(int count)
+        {
+            Position += MessagePackBinary.WriteMapHeader(ref Buffer, Position, count);
+        }
+
         public string Print()
         {
             var builder = new StringBuilder();
