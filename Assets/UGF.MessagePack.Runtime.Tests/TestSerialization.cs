@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using UGF.MessagePack.Runtime.Formatter.Collections;
+using UGF.MessagePack.Runtime.Formatter.Enums;
 
 namespace UGF.MessagePack.Runtime.Tests
 {
@@ -36,11 +38,11 @@ namespace UGF.MessagePack.Runtime.Tests
             {
                 base.Initialize();
 
-                m_formatterTypeCode = Provider.Get<TypeCode>();
-                m_formatterListInt = Provider.Get<List<int>>();
-                m_formatterListTypeCode = Provider.Get<List<TypeCode>>();
+                m_formatterTypeCode = new EnumFormatterInt32<TypeCode>(Provider, Context);
+                m_formatterListInt = new CollectionFormatterList<int>(Provider, Context);
+                m_formatterListTypeCode = new CollectionFormatterList<TypeCode>(Provider, Context);
                 m_formatterTarget = Provider.Get<Target>();
-                m_formatterListTarget = Provider.Get<List<Target>>();
+                m_formatterListTarget = new CollectionFormatterList<Target>(Provider, Context);
             }
 
             public override void Serialize(ref MessagePackWriter writer, Target value)
