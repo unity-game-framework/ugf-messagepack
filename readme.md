@@ -24,7 +24,7 @@ UGF.MessagePack
 
 ## Description
 
-No description.
+Third-party package based on [MessagePack-CSharp](https://github.com/neuecc/MessagePack-CSharp) (`1.8`).
 
 ## How to Install
 
